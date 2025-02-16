@@ -1,0 +1,43 @@
+.link_nav {
+  position: relative; /* Для позиционирования псевдоэлемента */
+  color: #000; /* Цвет текста по умолчанию */
+  text-decoration: none; /* Убираем стандартное подчеркивание */
+  transition: color 0.3s ease; /* Плавное изменение цвета текста */
+}
+
+.link_nav::after {
+  content: ""; /* Обязательно для псевдоэлемента */
+  position: absolute;
+  left: 0;
+  bottom: -2px; /* Позиция линии относительно текста */
+  width: 100%;
+  height: 2px; /* Толщина линии */
+  background-color: antiquewhite; /* Цвет линии */
+  transform: scaleX(0); /* Начальное состояние: линия скрыта */
+  transform-origin: bottom right; /* Точка начала трансформации */
+  transition: transform 0.3s ease; /* Плавное появление линии */
+}
+
+.link_nav:hover {
+  color: rgb(209, 173, 122); /* Изменение цвета текста при наведении */
+}
+header {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  z-index: 1000;
+  background-color: white;
+  margin-bottom: auto;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 0 40px;
+  height: 64px; /* Высота header */
+  border-bottom: 1px solid #f4eae7;
+}
+
+.link_nav:hover::after {
+  transform: scaleX(1); /* Линия появляется */
+  transform-origin: bottom left; /* Точка начала трансформации */
+}

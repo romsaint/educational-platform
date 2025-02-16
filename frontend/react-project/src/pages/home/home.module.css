@@ -1,0 +1,19 @@
+* {
+  font-family: "Space Grotesk", "Noto Sans", sans-serif;
+}
+
+.learnjs__main {
+  background-image: linear-gradient(rgba(0, 0, 0, 0.1) 0%, rgba(0, 0, 0, 0.4) 100%), url("https://cdn.usegalileo.ai/sdxl10/1846d919-4373-4d55-b255-2a33c4575a03.png");
+}
+.first_grid_image {
+  background-image: url("https://cdn.usegalileo.ai/sdxl10/614dfd13-cd6c-454b-937d-eff3e5bea8c9.png");
+}
+.second_grid_image {
+  background-image: url("https://cdn.usegalileo.ai/sdxl10/f5f186dd-7f53-4cab-813f-eb5b9f52af54.png");
+}
+.third_grid_image {
+  background-image: url("https://cdn.usegalileo.ai/sdxl10/5085caa0-9f67-4a68-8d9d-63d10aaa81e4.png");
+}
+.fourth_grid_image {
+  background-image: url("https://cdn.usegalileo.ai/sdxl10/0b163363-a5b4-4381-a521-7df28691d587.png");
+}

@@ -1,0 +1,15 @@
+.task_text {
+  width: 100%;
+}
+
+.task_lvl {
+  width: 10%;
+  align-items: center;
+  display: flex;
+  justify-content: center;
+  min-width: 70px;
+}
+
+.sorted_block {
+  align-items: center;
+}
