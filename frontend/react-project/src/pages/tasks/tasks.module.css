@@ -3,13 +3,41 @@
 }
 
 .task_lvl {
-  width: 10%;
+  min-width: 90px;
   align-items: center;
   display: flex;
   justify-content: center;
-  min-width: 70px;
 }
 
 .sorted_block {
   align-items: center;
+  border-bottom: 1px solid gainsboro;
+  padding: 5px;
+}
+.task_attempted_svg {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+.wrap_column_header {
+  align-items: center;
+  justify-content: center;
+  position: relative;
+}
+.column_header {
+  font-size: 12px;
+  color: rgb(94, 94, 94);
+}
+.title_column_header {
+  width: 100%;
+}
+.list_columns_header {
+  border-bottom: 1px solid gainsboro;
+}
+.sort_arrow {
+  position: absolute;
+  bottom: 13px;
+    right: 0;
+    transform: rotate(180deg);
 }

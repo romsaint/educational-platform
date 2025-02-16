@@ -1,13 +1,26 @@
 .hover_orange {
-    transition: 0.3s ease; /* Плавные переходы */
-  }
-  
-  .hover_orange:hover {
-    background-color: #e0440c; /* Темнее оранжевый при наведении */
-    box-shadow: 0 4px 8px rgba(241, 75, 14, 0.3); /* Тень при наведении */
-  }
-  
-  .hover_orange:active {
-    background-color: #d03d0a; /* Еще темнее при нажатии */
-    transform: scale(0.98); /* Легкое уменьшение кнопки при нажатии */
-  }
+  transition: 0.3s ease; /* Плавные переходы */
+}
+
+.hover_orange:hover {
+  background-color: #e0440c; /* Темнее оранжевый при наведении */
+  box-shadow: 0 4px 8px rgba(241, 75, 14, 0.3); /* Тень при наведении */
+}
+
+.hover_orange:active {
+  background-color: #d03d0a; /* Еще темнее при нажатии */
+  transform: scale(0.98); /* Легкое уменьшение кнопки при нажатии */
+}
+
+.hover_light_orange {
+  transition: 0.3s ease; /* Плавные переходы */
+}
+.hover_light_orange:hover {
+  background-color: #ff936c; /* Темнее оранжевый при наведении */
+  box-shadow: 0 4px 8px rgba(241, 75, 14, 0.3); /* Тень при наведении */
+}
+
+.hover_light_orange:active {
+  background-color: #ff8051; /* Еще темнее при нажатии */
+  transform: scale(0.98); /* Легкое уменьшение кнопки при нажатии */
+}

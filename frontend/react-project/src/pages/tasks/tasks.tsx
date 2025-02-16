@@ -14,10 +14,10 @@ export function Tasks() {
           <QuickAccess />
           <SearchBar />
         </div>
-        <div className="flex flex-col gap-4">
+        <div className="flex flex-col">
           <div className="flex flex-row justify-between items-center px-4 pb-3 pt-5">
             <h2 className="text-[#1c110d] text-[22px] font-bold leading-tight tracking-[-0.015em]">
-              Beginner
+              Tasks
             </h2>
             <SortingButtons />
           </div>
