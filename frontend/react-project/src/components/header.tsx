@@ -1,6 +1,5 @@
-import { Link } from 'react-router-dom';
-import styles from '../styles/header.module.css'
-
+import { Link } from "react-router-dom";
+import styles from "../styles/header.module.css";
 
 export function Header() {
   return (
@@ -39,12 +38,14 @@ export function Header() {
             >
               Courses
             </a>
-            <a
-              className={`${styles.link_nav} text-[#1c110d] text-sm font-medium leading-normal`}
-              href="#"
-            >
-              Projects
-            </a>
+            <Link to={"/tasks"}>
+              <a
+                className={`${styles.link_nav} text-[#1c110d] text-sm font-medium leading-normal`}
+                href="#"
+              >
+                Tasks
+              </a>
+            </Link>
             <a
               className={`${styles.link_nav} text-[#1c110d] text-sm font-medium leading-normal`}
               href="#"
@@ -66,8 +67,8 @@ export function Header() {
           </div>
           <div className="flex gap-2">
             <button className="hover_orange flex min-w-[84px] max-w-[480px] cursor-pointer items-center justify-center overflow-hidden rounded-xl h-10 px-4 bg-[#f14b0e] text-[#fcf9f8] text-sm font-bold leading-normal tracking-[0.015em]">
-              <Link to='/tasks'>
-              <span className="truncate">Start Learning</span>
+              <Link to="/registration">
+                <span className="truncate">Registration</span>
               </Link>
             </button>
             <button className="hover_orange flex max-w-[480px] cursor-pointer items-center justify-center overflow-hidden rounded-xl h-10 bg-[#f4eae7] text-[#1c110d] gap-2 text-sm font-bold leading-normal tracking-[0.015em] min-w-0 px-2.5">

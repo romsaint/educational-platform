@@ -1,0 +1,10 @@
+.reg_input:focus, input:active, input, input::after, input::before {
+    outline: 0;
+    border: 0;
+}
+.wrap {
+    align-items: center;
+    justify-content: center;
+    display: flex;
+    margin-top: 7rem;
+}

@@ -3,6 +3,7 @@ import { Header } from "./components/header";
 import { Home } from "./pages/home/home";
 import { Wrap } from "./components/wrap";
 import { Tasks } from "./pages/tasks/tasks";
+import { Signup } from "./pages/registration/registration/registration";
 
 function App() {
   return (
@@ -12,6 +13,7 @@ function App() {
         <Routes>
           <Route path="/" element={<Home />} />
           <Route path="/tasks" element={<Tasks />} />
+          <Route path="/registration" element={<Signup />} />
         </Routes>
       </BrowserRouter>
     </Wrap>
