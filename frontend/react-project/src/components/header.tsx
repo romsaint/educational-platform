@@ -1,7 +1,14 @@
 import { Link } from "react-router-dom";
 import styles from "../styles/header.module.css";
+import Cookie from "js-cookie";
+import { useEffect, useState } from "react";
 
 export function Header() {
+  const [isReg, setIsReg] = useState<string | undefined>(undefined);
+  useEffect(() => {
+    const user = Cookie.get("user");
+    setIsReg(user);
+  }, []);
   return (
     <>
       <header className="flex items-center justify-between whitespace-nowrap border-b border-solid border-b-[#f4eae7] px-10 py-3">
@@ -46,30 +53,38 @@ export function Header() {
                 Tasks
               </a>
             </Link>
-            <a
-              className={`${styles.link_nav} text-[#1c110d] text-sm font-medium leading-normal`}
-              href="#"
-            >
-              Guides
-            </a>
+            {isReg !== undefined ? (
+              <Link to={'/profile'}>
+                <a
+                className={`${styles.link_nav} text-[#1c110d] text-sm font-medium leading-normal`}
+                href="#"
+              >
+                Profile
+              </a>
+              </Link>
+            ) : (
+              ""
+            )}
             <a
               className={`${styles.link_nav} text-[#1c110d] text-sm font-medium leading-normal`}
               href="#"
             >
               Community
             </a>
-            <a
-              className={`${styles.link_nav} text-[#1c110d] text-sm font-medium leading-normal`}
-              href="#"
-            >
-              Resources
-            </a>
           </div>
           <div className="flex gap-2">
             <button className="hover_orange flex min-w-[84px] max-w-[480px] cursor-pointer items-center justify-center overflow-hidden rounded-xl h-10 px-4 bg-[#f14b0e] text-[#fcf9f8] text-sm font-bold leading-normal tracking-[0.015em]">
-              <Link to="/registration">
-                <span className="truncate">Registration</span>
-              </Link>
+              {isReg === undefined ? (
+                <Link to="/registration">
+                  <span className="truncate">Registration</span>
+                </Link>
+              ) : (
+                <Link to="/profile">
+                  <span className="truncate">
+                    Hello {JSON.parse(isReg).username}!
+                  </span>
+                </Link>
+              )}
             </button>
             <button className="hover_orange flex max-w-[480px] cursor-pointer items-center justify-center overflow-hidden rounded-xl h-10 bg-[#f4eae7] text-[#1c110d] gap-2 text-sm font-bold leading-normal tracking-[0.015em] min-w-0 px-2.5">
               <div

@@ -1,10 +1,16 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import styles from "./registration.module.css";
-import { checkUnique } from "./logic/checkUnique";
+import Cookies from "js-cookie";
+import { FormRegisration } from "./components/formRegistration";
+import { Link } from "react-router-dom";
 
 export function Signup() {
-  const [err, setErr] = useState(null);
-  const [uniqueChecked, setUniqueChecked] = useState<boolean | undefined | "Data">(undefined)
+  const [isReg, setIsReg] = useState<string | undefined>(undefined);
+
+  useEffect(() => {
+    const user = Cookies.get("user");
+    setIsReg(user);
+  }, []);
 
   return (
     <>
@@ -32,87 +38,33 @@ export function Signup() {
             <h2 className="text-2xl font-bold text-[#1c110d] mb-2">
               Create an Account
             </h2>
-            <p className="text-sm text-[#9c5f49]">
-              Join CodeCamp to start your coding journey.
-            </p>
+            {isReg === undefined ? (
+              <p className="text-sm text-[#9c5f49]">
+                Join CodeCamp to start your coding journey.
+              </p>
+            ) : (
+              ""
+            )}
           </div>
 
-          <form className="mt-6" method="POST" action={'http://localhost:3000/registration'} aria-disabled={uniqueChecked === false ? true : (uniqueChecked === 'Data' ? true : false)}>
-            <div className="mb-4">
-              <label
-                className="block text-sm font-medium text-[#1c110d] mb-1"
-                htmlFor="name"
-              >
-                Name
-              </label>
-              <input
-                type="text"
-                id="name"
-                required={true}
-                placeholder="Enter your name"
-                className={`${styles.reg_input} w-full px-4 py-2 rounded ring-[#f14b0e] ring-2 focus:ring-[#f14b0e] focus:ring-2`}
-              />
-            </div>
-            <div className="mb-4">
-              <label className="block text-sm font-medium text-[#1c110d] mb-1">
-                Unique name
-              </label>
-              <input
-                type="text"
-                id="unique_id"
-                required={true}
-                placeholder="Enter your unique name"
-                className={`${styles.reg_input} w-full px-4 py-2 rounded  ring-[#f14b0e] ring-2 focus:ring-[#f14b0e] focus:ring-2`}
-                onChange={(el) => checkUnique(el.target.value, setUniqueChecked)}
-              />
-              {
-                uniqueChecked === false ? 
-                  <p className="text-sm text-[#ff4f4f] mt-2 mb-2">Unique name already exists</p>
-                : "" 
-              }
-              {
-                uniqueChecked === 'Data' ? 
-                  <p className="text-sm text-[#ff4f4f] mt-2 mb-2">Must be filled in</p>
-                : "" 
-              }
-              {
-                uniqueChecked === true ? 
-                  <p className="text-sm text-[#3cda3c] mt-2 mb-2">Valid unique name</p>
-                : "" 
-              }
-            </div>
-            <div className="mb-6">
-              <label
-                className="block text-sm font-medium text-[#1c110d] mb-1"
-                htmlFor="password"
-              >
-                Password
-              </label>
-              <input
-                type="password"
-                id="password"
-                required={true}
-                placeholder="Enter your password"
-                className={`${styles.reg_input} w-full px-4 py-2 rounded  ring-[#f14b0e] ring-2 focus:ring-[#f14b0e] focus:ring-2`}
-              />
-            </div>
-            <button
-              type="submit"
-              className="hover_orange w-full bg-[#f14b0e] text-white py-2 px-4 rounded-lg font-bold hover:bg-[#d1400a] transition-colors"
-              disabled={uniqueChecked === false ? true : (uniqueChecked === 'Data' ? true: false)}
-            >
-              Sign Up
-            </button>
-          </form>
+          {isReg === undefined ? (
+            <FormRegisration />
+          ) : (
+            <h1 className={`${styles.already_logged} text-center text-2xl`}>
+              You've already logged in
+            </h1>
+          )}
 
           <p className="mt-6 text-center text-sm text-[#9c5f49]">
             Already have an account?
-            <a
-              href="#"
-              className="text-[#f14b0e] font-medium hover:underline ml-2"
-            >
-              Log in
-            </a>
+            <Link to={"/login"}>
+              <a
+                href="#"
+                className="text-[#f14b0e] font-medium hover:underline ml-2"
+              >
+                Log in
+              </a>
+            </Link>
           </p>
         </div>
       </div>
