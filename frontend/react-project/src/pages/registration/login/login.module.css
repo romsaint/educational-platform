@@ -1,0 +1,19 @@
+.wrap {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  height: 100vh;
+  background-color: #fcf9f8; /* Фон страницы */
+}
+
+.reg_input:focus, input:active, input, input::after, input::before {
+  outline: 0;
+  border: 0;
+}
+.reg_input:focus, .reg_input {
+  border-bottom: 2px solid #d1400a;
+}
+
+.already_logged {
+  color: #1c110d;
+}

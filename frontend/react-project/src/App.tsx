@@ -4,19 +4,24 @@ import { Home } from "./pages/home/home";
 import { Wrap } from "./components/wrap";
 import { Tasks } from "./pages/tasks/tasks";
 import { Signup } from "./pages/registration/registration/registration";
+import { Login } from "./pages/registration/login/login";
+import { ErrorContextProvider } from "./components/context/error.context";
 
 function App() {
   return (
-    <Wrap>
-      <BrowserRouter>
-        <Header />
-        <Routes>
-          <Route path="/" element={<Home />} />
-          <Route path="/tasks" element={<Tasks />} />
-          <Route path="/registration" element={<Signup />} />
-        </Routes>
-      </BrowserRouter>
-    </Wrap>
+    <ErrorContextProvider>
+      <Wrap>
+        <BrowserRouter>
+          <Header />
+          <Routes>
+            <Route path="/" element={<Home />} />
+            <Route path="/tasks" element={<Tasks />} />
+            <Route path="/registration" element={<Signup />} />
+            <Route path="/login" element={<Login />} />
+          </Routes>
+        </BrowserRouter>
+      </Wrap>
+    </ErrorContextProvider>
   );
 }
 

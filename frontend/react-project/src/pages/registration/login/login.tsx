@@ -1,25 +1,17 @@
-import { useEffect, useState } from "react";
-import styles from "./registration.module.css";
-import Cookies from "js-cookie";
-import { FormRegisration } from "./components/formRegistration";
+import styles from "./login.module.css"; // Создайте файл login.module.css для стилей
 import { Link } from "react-router-dom";
+import { FormLogin } from "./components/formLogin";
 import { Error } from "../../../components/erorr";
 import { useError } from "../../../components/context/error.context";
 
-export function Signup() {
-  const [isReg, setIsReg] = useState<string | undefined>(undefined);
+export function Login() {
   const {error, setError} = useError()
-
-  useEffect(() => {
-    const user = Cookies.get("user");
-    setIsReg(user);
-  }, []);
 
   return (
     <>
-      <div className={`${styles.wrap} w-100`}>
+      <div className={`${styles.wrap} w-100 flex-col`}>
         {error ? <Error message={error} setErr={setError} /> : ''}
-        <div className="w-full max-w-md bg-white rounded-lg shadow-lg p-8">
+        <div className="consent z-0 w-full max-w-md bg-white rounded-lg shadow-lg p-8">
           <div className="text-center">
             <svg
               className="mx-auto mb-6"
@@ -40,33 +32,20 @@ export function Signup() {
               />
             </svg>
             <h2 className="text-2xl font-bold text-[#1c110d] mb-2">
-              Create an Account
+              Welcome Back
             </h2>
-            {isReg === undefined ? (
-              <p className="text-sm text-[#9c5f49]">
-                Join CodeCamp to start your coding journey.
-              </p>
-            ) : (
-              ""
-            )}
           </div>
 
-          {isReg === undefined ? (
-            <FormRegisration />
-          ) : (
-            <h1 className={`${styles.already_logged} text-center text-2xl`}>
-              You've already logged in
-            </h1>
-          )}
+          <FormLogin />
 
           <p className="mt-6 text-center text-sm text-[#9c5f49]">
-            Already have an account?
-            <Link to={"/login"}>
+            Don't have an account?
+            <Link to={"/registration"}>
               <a
                 href="#"
                 className="text-[#f14b0e] font-medium hover:underline ml-2"
               >
-                Log in
+                Sign up
               </a>
             </Link>
           </p>

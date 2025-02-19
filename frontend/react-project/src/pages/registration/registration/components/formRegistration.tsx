@@ -1,5 +1,5 @@
 import { useNavigate } from "react-router-dom";
-import { onSubmitReg } from "../logic/onSubmitReg";
+import { onSubmitForm } from "../logic/onSubmitForm";
 import { useState } from "react";
 import styles from "../registration.module.css";
 import { checkUnique } from "../logic/checkUnique";
@@ -14,7 +14,7 @@ export function FormRegisration() {
       <form
         className="mt-6"
         method="POST"
-        onSubmit={(event) => onSubmitReg(event, navigate)}
+        onSubmit={(event) => onSubmitForm(event, navigate, 'registration')}
         action={"http://localhost:3000/auth/registration"}
         aria-disabled={
           uniqueChecked === false
@@ -37,7 +37,7 @@ export function FormRegisration() {
             required={true}
             name="username"
             placeholder="Enter your name"
-            className={`${styles.reg_input} w-full px-4 py-2 rounded ring-[#f14b0e] ring-2 focus:ring-[#f14b0e] focus:ring-2`}
+            className={`${styles.reg_input} w-full px-4 py-2 ring-0 focus:ring-0`}
           />
         </div>
         <div className="mb-4">
@@ -50,7 +50,7 @@ export function FormRegisration() {
             required={true}
             name="unique_id"
             placeholder="Enter your unique name"
-            className={`${styles.reg_input} w-full px-4 py-2 rounded  ring-[#f14b0e] ring-2 focus:ring-[#f14b0e] focus:ring-2`}
+            className={`${styles.reg_input} w-full px-4 py-2 ring-0 focus:ring-0`}
             onChange={(el) => checkUnique(el.target.value, setUniqueChecked)}
           />
           {uniqueChecked === false ? (
@@ -88,7 +88,7 @@ export function FormRegisration() {
             name="password"
             required={true}
             placeholder="Enter your password"
-            className={`${styles.reg_input} w-full px-4 py-2 rounded  ring-[#f14b0e] ring-2 focus:ring-[#f14b0e] focus:ring-2`}
+            className={`${styles.reg_input}  w-full px-4 py-2 ring-0 focus:ring-0`}
           />
         </div>
         <button
