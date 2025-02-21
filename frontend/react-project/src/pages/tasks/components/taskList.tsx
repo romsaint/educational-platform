@@ -1,58 +1,58 @@
-import Task from "./task";
-import styles from '../tasks.module.css'
-
+import { useContext, useEffect, useState } from "react";
+import { useSearchParams } from "react-router-dom";
+import styles from "../tasks.module.css";
+import { Pagination } from "./pagination";
+import { fetchTasks } from "../logic/fethTasks";
+import { ITask } from "../interfaces/task.interface";
 
 const TaskList = () => {
-  const tasks = [
-    {
-      level: "Easy",
-      title: "44 Sum",
-      date: "15.02.2025",
-      isAttempted: false,
-      id: 1
-    },
-    {
-      level: "Medium",
-      title: "Two Sum",
-      date: "12.02.2025",
-      isAttempted: true,
-      id: 2
-    },
-    {
-      level: "Hard",
-      title: "1 Sum",
-      date: "09.02.2025",
-      isAttempted: false,
-      id: 3
-    },
-  ];
+  const [tasks, setTasks] = useState<ITask[] | []>([]);
+  const [quantity, setQuantity] = useState<number | null>(null);
+  const [searchParams, setSearchParams] = useSearchParams();
+
+  // Получаем параметры из URL
+  const page = parseInt(searchParams.get("page") || "1", 10);
+  const onPage = parseInt(searchParams.get("onPage") || "5", 10);
+
+  useEffect(() => {
+    const loadTasks = async () => {
+      const fetchedTasks = await fetchTasks(page, onPage);
+      if (fetchedTasks) {
+        if (fetchedTasks.pagination && fetchedTasks.quantity) {
+          setTasks(fetchedTasks.pagination);
+          setQuantity(fetchedTasks.quantity);
+        }
+      } else {
+        console.error("Failed to fetch tasks");
+      }
+    };
+
+    loadTasks();
+  }, [page, onPage]);
+
+  const handleItemsPerPageChange = (newItemsPerPage: number) => {
+    // Обновляем параметр `onPage` в URL
+    setSearchParams({ page: page.toString(), onPage: newItemsPerPage.toString() });
+  };
+
+  const handlePageChange = (newPage: number) => {
+    // Обновляем параметр `page` в URL
+    setSearchParams({ page: newPage.toString(), onPage: onPage.toString() });
+  };
 
   return (
     <>
       <div className={`${styles.list_columns_header} gap-2 flex flex-row p-2`}>
-        <div className={`${styles.wrap_column_header} flex justify-center  min-w-[90px]`}>
-            <p className={`${styles.column_header}`}>
-              Level
-              </p>
-          </div>
-        <div className={`${styles.wrap_column_header} ${styles.title_column_header} flex justify-center  min-w-[90px]`}><p className={`${styles.column_header}`}>Title</p></div>
-        <div className={`${styles.wrap_column_header} flex justify-center  min-w-[60px]`}>
-            <p className={`${styles.column_header}`}>
-              Status
-            </p>
-          </div>
-        <div className={`${styles.wrap_column_header} flex justify-center  min-w-[90px]`}>
-          <p className={`${styles.column_header}`}>
-            Date
-            <svg xmlns="http://www.w3.org/2000/svg" className={`${styles.sort_arrow}`} width="15" height="15" viewBox="0 0 24 24"><g fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="9"/><path d="M10 10v4m0 0h4m-4 0l4-4"/></g></svg>
-          </p>
-        </div>
+        {/* Ваш код для заголовков колонок */}
       </div>
-      <div className="flex flex-col p-2">
-        {tasks.map((task, index) => (
-          <Task key={index} {...task} />
-        ))}
-      </div>
+      <Pagination
+        tasks={tasks}
+        itemsPerPage={onPage}
+        onItemsPerPageChange={handleItemsPerPageChange}
+        currentPage={page}
+        setCurrentPage={handlePageChange}
+        quantity={quantity}
+      />
     </>
   );
 };

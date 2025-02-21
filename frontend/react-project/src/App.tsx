@@ -6,6 +6,7 @@ import { Tasks } from "./pages/tasks/tasks";
 import { Signup } from "./pages/registration/registration/registration";
 import { Login } from "./pages/registration/login/login";
 import { ErrorContextProvider } from "./components/context/error.context";
+import { Task } from "./pages/task/task";
 
 function App() {
   return (
@@ -18,6 +19,7 @@ function App() {
             <Route path="/tasks" element={<Tasks />} />
             <Route path="/registration" element={<Signup />} />
             <Route path="/login" element={<Login />} />
+            <Route path="/task/:id" element={<Task />} />
           </Routes>
         </BrowserRouter>
       </Wrap>

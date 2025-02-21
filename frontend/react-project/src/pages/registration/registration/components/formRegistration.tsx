@@ -3,18 +3,20 @@ import { onSubmitForm } from "../logic/onSubmitForm";
 import { useState } from "react";
 import styles from "../registration.module.css";
 import { checkUnique } from "../logic/checkUnique";
+import { useError } from "../../../../components/context/error.context";
 
 
 export function FormRegisration() {
     const [uniqueChecked, setUniqueChecked] = useState<boolean | undefined | "Data">(undefined)
     const navigate = useNavigate()
+    const {error, setError} = useError()
 
   return (
     <>
       <form
         className="mt-6"
         method="POST"
-        onSubmit={(event) => onSubmitForm(event, navigate, 'registration')}
+        onSubmit={(event) => onSubmitForm(event, navigate, 'registration', setError)}
         action={"http://localhost:3000/auth/registration"}
         aria-disabled={
           uniqueChecked === false

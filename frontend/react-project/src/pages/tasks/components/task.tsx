@@ -1,7 +1,7 @@
 import styles from '../tasks.module.css'
 
 
-const Task = ({ level, title, date, isAttempted, id}: {level: string, title: string, date: string, isAttempted: boolean, id: number}) => {
+export const Task = ({ level, title, date, isAttempted, id}: {level: string, title: string, date: string, isAttempted: boolean, id: number}) => {
   return (
     <div className="task gap-2 flex flex-row mb-2">
       <a href={`/tasks?lvl=${level.toLowerCase()}`} className={`${styles.task_lvl} text-[${level === 'Easy' ? '#499c5e' : level === 'Medium' ? '#9d6425' : '#a51d1d'}] text-sm font-normal leading-normal gap-1 p-2 bg-[#f4eae7]`}>
@@ -21,5 +21,3 @@ const Task = ({ level, title, date, isAttempted, id}: {level: string, title: str
     </div>
   );
 };
-
-export default Task;
