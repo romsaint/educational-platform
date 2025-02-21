@@ -1,4 +1,4 @@
-import { Controller, Get, Param, Query } from '@nestjs/common';
+import { Body, Controller, Get, Param, ParseIntPipe, Post, Query } from '@nestjs/common';
 import { AppService } from './app.service';
 
 @Controller('tasks')
@@ -15,5 +15,15 @@ export class AppController {
   @Get('quantity-tasks')
   async quantityTasks() {
     return await this.appService.quantityTasks();
+  }
+
+  @Get('task/:id')
+  async task(@Param('id', ParseIntPipe) id: number) {
+    return await this.appService.task(id);
+  }
+
+  @Post('tasksByTag')
+  async tasksByTag(@Body('tags') data: string) {
+    return await this.appService.tasksByTag(data)
   }
 }

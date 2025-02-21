@@ -22,7 +22,6 @@ export const Pagination: React.FC<PaginationProps> = ({
   }
 
   const totalPages = Math.ceil(quantity / itemsPerPage);
-  console.log(tasks)
 
   const handleItemsPerPageChange = (
     event: React.ChangeEvent<HTMLSelectElement>
@@ -58,7 +57,7 @@ export const Pagination: React.FC<PaginationProps> = ({
         <button
           key={i}
           onClick={() => setCurrentPage(i)}
-          className={`px-4 py-2 ${
+          className={` w-[50px]  px-4 py-2 ${
             currentPage === i
               ? "bg-[#f14b0e] text-white"
               : "bg-[#f4eae7] text-[#1c110d]"
