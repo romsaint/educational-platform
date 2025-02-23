@@ -1,6 +1,6 @@
 import { useEffect, useState } from "react";
 import { fetchTasksByTags } from "../logic/fethTaskByTags";
-import { ITask } from "../../tasks/interfaces/task.interface";
+import { ITask } from "../../../interfaces/task.interface";
 
 export function Sidebar({
   description,
@@ -23,7 +23,7 @@ export function Sidebar({
 
   // === Возвращаемый JSX ===
   return (
-    <div className="max-w-[30%] bg-[#f4eae7] p-4 border-r border-[#e8d5ce] flex flex-col gap-6">
+    <div className="w-[25%] bg-[#f4eae7] p-4 border-r border-[#e8d5ce] flex flex-col gap-6">
       <div className="description_task">
         <h1 className="text-[#1c110d] text-3xl text-center font-bold mb-4">
           Description Task

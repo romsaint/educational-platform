@@ -4,7 +4,7 @@ export function CodeEditor() {
     <div className="bg-[#f4eae7] rounded p-4 mb-8">
       <div className="flex items-center justify-between mb-4">
         <h2 className="text-lg font-bold text-[#1c110d]">Your Code</h2>
-        <button className="px-4 py-2 bg-[#f14b0e] text-white rounded-lg hover:bg-[#d43d0a] transition-all">
+        <button className="hover_orange px-4 py-2 bg-[#f14b0e] text-white rounded-lg hover:bg-[#d43d0a] transition-all">
           Run Code
         </button>
       </div>

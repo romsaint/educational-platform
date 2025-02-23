@@ -10,5 +10,6 @@ export interface ITask {
     created_by: number,
     answer: string,
     iscommited: boolean,
-    tags: string
+    tags: string,
+    likes: number
 }

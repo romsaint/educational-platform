@@ -11,8 +11,6 @@
 
 .sorted_block {
   align-items: center;
-  border-bottom: 1px solid gainsboro;
-  padding: 5px;
 }
 .task_attempted_svg {
   display: flex;

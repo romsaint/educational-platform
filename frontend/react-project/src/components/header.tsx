@@ -45,7 +45,7 @@ export function Header() {
             >
               Courses
             </a>
-            <Link to={"/tasks"}>
+            <Link to={"/tasks?lvlSorted=toLow"}>
               <a
                 className={`${styles.link_nav} text-[#1c110d] text-sm font-medium leading-normal`}
                 href="#"

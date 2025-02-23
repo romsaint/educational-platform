@@ -1,7 +1,5 @@
-import { useParams } from "react-router-dom";
 import QuickAccess from "./components/quickAccess";
 import SearchBar from "./components/searchBar";
-import SortingButtons from "./components/sortingButtons";
 import TaskList from "./components/taskList";
 import { CurrentPageProvider } from "./context/currentPage";
 
@@ -19,12 +17,6 @@ export function Tasks() {
             <SearchBar />
           </div>
           <div className="flex flex-col">
-            <div className="flex flex-row justify-between items-center px-4 pb-3 pt-5">
-              <h2 className="text-[#1c110d] text-[22px] font-bold leading-tight tracking-[-0.015em]">
-                Tasks
-              </h2>
-              <SortingButtons />
-            </div>
             <TaskList />
           </div>
         </div>

@@ -5,10 +5,11 @@ export interface ITask {
     id: number,
     title: string,
     description: string,
-    date_created: Date,
+    date_created: string,
     level: TaskLevels,
     created_by: number,
     answer: string,
     iscommited: boolean,
-    tags: string
+    tags: string,
+    likes: number
 }

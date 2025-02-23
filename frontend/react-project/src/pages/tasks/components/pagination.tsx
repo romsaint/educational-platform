@@ -1,7 +1,9 @@
+import { ITask } from "../../../interfaces/task.interface";
 import { Task } from "./task";
 
+
 interface PaginationProps {
-  tasks: any[];
+  tasks: ITask[];
   onItemsPerPageChange: (itemsPerPage: number) => void;
   itemsPerPage: number;
   currentPage: number;
@@ -23,9 +25,7 @@ export const Pagination: React.FC<PaginationProps> = ({
 
   const totalPages = Math.ceil(quantity / itemsPerPage);
 
-  const handleItemsPerPageChange = (
-    event: React.ChangeEvent<HTMLSelectElement>
-  ) => {
+  const handleItemsPerPageChange = (event: React.ChangeEvent<HTMLSelectElement>) => {
     const newItemsPerPage = parseInt(event.target.value, 10);
     onItemsPerPageChange(newItemsPerPage);
   };
@@ -57,7 +57,7 @@ export const Pagination: React.FC<PaginationProps> = ({
         <button
           key={i}
           onClick={() => setCurrentPage(i)}
-          className={` w-[50px]  px-4 py-2 ${
+          className={`w-[50px] px-4 py-2 ${
             currentPage === i
               ? "bg-[#f14b0e] text-white"
               : "bg-[#f4eae7] text-[#1c110d]"
@@ -84,9 +84,20 @@ export const Pagination: React.FC<PaginationProps> = ({
 
   return (
     <div className="p-6 bg-[#fcf9f8]">
-      <h1 className="text-3xl font-bold text-[#1c110d] mb-6">Tasks</h1>
+      <h1 className="text-3xl font-bold text-[#1c110d] text-center mb-6">Tasks</h1>
 
-      <div className="mb-4 flex items-center">
+      {/* Отображение задач */}
+      {tasks.map((task: ITask, idx: number) => (
+        <Task key={idx} task={task} idx={idx} />
+      ))}
+
+      {/* Пагинация */}
+      <div className="flex mt-6 justify-center gap-2">
+        {renderPaginationButtons()}
+      </div>
+
+      {/* Выбор количества задач на странице */}
+      <div className="mb-4 mt-5 flex items-center">
         <label htmlFor="itemsPerPage" className="mr-2 text-[#1c110d]">
           Tasks per page:
         </label>
@@ -100,14 +111,6 @@ export const Pagination: React.FC<PaginationProps> = ({
           <option value="10">10</option>
           <option value="20">20</option>
         </select>
-      </div>
-
-      {tasks.map((task: any, idx: number) => (
-        <Task key={idx} {...task} />
-      ))}
-
-      <div className="flex justify-center gap-2">
-        {renderPaginationButtons()}
       </div>
     </div>
   );

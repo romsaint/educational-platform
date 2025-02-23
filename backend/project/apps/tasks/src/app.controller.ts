@@ -6,15 +6,13 @@ export class AppController {
   constructor(private readonly appService: AppService) {}
 
   @Get('')
-  async getHello(
+  async allTasks(
     @Query('page') page: number = 1,
-    @Query('onPage') onPage: number = 10) {
-    return await this.appService.allTasks(page, onPage);
-  }
-
-  @Get('quantity-tasks')
-  async quantityTasks() {
-    return await this.appService.quantityTasks();
+    @Query('onPage') onPage: number = 5,
+    @Query('lvlSorted') lvl: string = 'toLow',
+    @Query('tags') tags: string = '',
+  ) {
+    return await this.appService.allTasks(page, onPage, lvl, tags);
   }
 
   @Get('task/:id')
@@ -25,5 +23,10 @@ export class AppController {
   @Post('tasksByTag')
   async tasksByTag(@Body('tags') data: string) {
     return await this.appService.tasksByTag(data)
+  }
+
+  @Get('all-tags')
+  async allTags(): Promise<string[]> { 
+    return this.appService.allTags()
   }
 }
