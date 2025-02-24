@@ -7,6 +7,7 @@ import { useNavigate, useSearchParams } from "react-router-dom";
 export const Task = ({ task, idx }: { task: ITask; idx: number }) => {
   const [searchParams, setSearchParams] = useSearchParams();
   const [showLevelOptions, setShowLevelOptions] = useState(!!searchParams.get("lvlSorted"));
+  const [showDateOptions, setShowDateOptions] = useState(!!searchParams.get("dateSorted")); // false = new
   const [showTagOptions, setShowTagOptions] = useState(false);
   const [tags, setTags] = useState<{ btrim: string }[]>([]);
   const navigate = useNavigate();
@@ -17,7 +18,7 @@ export const Task = ({ task, idx }: { task: ITask; idx: number }) => {
   useEffect(() => {
     const updateWidth = () => {
       if (taskTextRef.current) {
-        setWidthTaskText(taskTextRef.current.clientWidth - 52);
+        setWidthTaskText(taskTextRef.current.clientWidth - 60);
       }
     };
 
@@ -49,6 +50,12 @@ export const Task = ({ task, idx }: { task: ITask; idx: number }) => {
     const lvlSorted = sorted ? "toHigh" : "toLow";
     updateUrlParams({ lvlSorted });
     setShowLevelOptions(!sorted);
+  };
+
+  const handleDateFilter = (sorted: boolean) => {
+    const dateSorted = sorted ? "old" : "new";
+    updateUrlParams({ dateSorted });
+    setShowDateOptions(sorted);
   };
 
   // Фильтрация по тегам
@@ -106,7 +113,6 @@ export const Task = ({ task, idx }: { task: ITask; idx: number }) => {
         </div>
       )}
 
-      {/* Кнопка уровня сложности */}
       <button
         className={`${styles.task_lvl} hover_light_orange mr-2 text-[${
           task.level === "Easy"
@@ -119,7 +125,7 @@ export const Task = ({ task, idx }: { task: ITask; idx: number }) => {
         {task.level}
       </button>
 
-      {/* ФИЛЬТР ПО ТЕГАМ (только для первого task) */}
+
       {idx === 0 && (
         <div className="relative">
           {/* Стрелочка для фильтра тегов */}
@@ -134,7 +140,7 @@ export const Task = ({ task, idx }: { task: ITask; idx: number }) => {
             >
               <svg
                 xmlns="http://www.w3.org/2000/svg"
-                className={` ${showTagOptions ? "rotate-180" : ""}`}
+                className={` ${!showTagOptions ? "rotate-180" : ""}`}
                 width="15"
                 height="15"
                 viewBox="0 0 12 12"
@@ -152,7 +158,7 @@ export const Task = ({ task, idx }: { task: ITask; idx: number }) => {
           {showTagOptions && (
             <div
               className={`max-h-[100px] w-[${
-                widthTaskText + 52
+                widthTaskText + 60
               }] absolute top-0 left-0 bg-[#fcf9f8] rounded-md shadow-md z-10 overflow-y-auto grid grid-cols-3 gap-2 p-2`}
             >
               {tags.length > 0 ? (
@@ -160,7 +166,7 @@ export const Task = ({ task, idx }: { task: ITask; idx: number }) => {
                   <button
                     key={tag.btrim}
                     onClick={() => handleTagFilter(tag.btrim)}
-                    className="px-4 py-2 text-sm text-[#1c110d] hover:bg-[#e8d5ce] text-left rounded"
+                    className={`${searchParams.get('tags')?.split(',').includes(tag.btrim) ? 'bg-[#e8d5ce]' : ''} px-4 py-2 text-sm text-[#1c110d] hover:bg-[#e8d5ce] text-left rounded`}
                   >
                     #{tag.btrim}
                   </button>
@@ -194,7 +200,34 @@ export const Task = ({ task, idx }: { task: ITask; idx: number }) => {
           ))}
         </div>
       </button>
-
+      {idx === 0 && (
+        <div className="relative">
+          {/* Стрелочка для фильтра уровня сложности */}
+          <button
+            onClick={() => handleDateFilter(!showDateOptions)}
+            className="absolute -top-6 left-0 text-[#1c110d] hover:text-[#f14b0e] transition-transform duration-200"
+          >
+            <span
+              className={`min-w-[90px] inline-block transform flex flex-row justify-between`}
+              style={{ alignItems: "center" }}
+            >
+              <svg
+                xmlns="http://www.w3.org/2000/svg"
+                className={` ${!showDateOptions ? "rotate-180" : ""}`}
+                width="15"
+                height="15"
+                viewBox="0 0 12 12"
+              >
+                <path
+                  fill="currentColor"
+                  d="M6.786 1.459a.903.903 0 0 0-1.572 0L1.122 8.628C.774 9.238 1.211 10 1.91 10h8.18c.698 0 1.135-.762.787-1.372l-4.092-7.17Z"
+                />
+              </svg>
+              <p>Date</p>
+            </span>
+          </button>
+        </div>
+      )}
       {/* ФИЛЬТР ПО ДАТЕ */}
       <p
         className={`${styles.task_lvl} mr-2 text-[13px] font-normal leading-normal gap-1 p-2 bg-[#f4eae7]`}

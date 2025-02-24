@@ -11,8 +11,9 @@ export class AppController {
     @Query('onPage') onPage: number = 5,
     @Query('lvlSorted') lvl: string = 'toLow',
     @Query('tags') tags: string = '',
+    @Query('date') date: 'old' | 'new' | null = null,
   ) {
-    return await this.appService.allTasks(page, onPage, lvl, tags);
+    return await this.appService.allTasks(page, onPage, lvl, tags, date);
   }
 
   @Get('task/:id')
