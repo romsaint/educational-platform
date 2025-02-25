@@ -15,11 +15,16 @@ const TaskList = () => {
   const onPage = parseInt(searchParams.get("onPage") || "5", 10);
   const lvlSorted = searchParams.get("lvlSorted") ?? 'toLow'
   const tags = searchParams.get("tags") ?? ''
+  const date = searchParams.get("date") ?? ''
+  const level = searchParams.get("level") ?? ''
 
   useEffect(() => {
     const loadTasks = async () => {
-      const fetchedTasks = await fetchTasks(page, onPage, lvlSorted, tags);
+      const fetchedTasks = await fetchTasks(page, onPage, lvlSorted, tags, date, level);
       if (fetchedTasks) {
+        if(fetchedTasks.page) {
+          handlePageChange(1)
+        }
         if (fetchedTasks.pagination && fetchedTasks.quantity) {
           setTasks(fetchedTasks.pagination);
           setQuantity(fetchedTasks.quantity);
@@ -30,37 +35,29 @@ const TaskList = () => {
     };
 
     loadTasks();
-  }, [page, onPage, lvlSorted, tags]);
+  }, [page, onPage, lvlSorted, tags, date, level]);
 
   const handleItemsPerPageChange = (newItemsPerPage: number) => {
     // Создаем новый объект параметров поиска, используя текущие значения
     const newSearchParams = new URLSearchParams(searchParams.toString());
     // Обновляем или добавляем параметр 'onPage'
     newSearchParams.set('onPage', newItemsPerPage.toString());
-    // Оставляем 'page' как есть, если он уже был, или добавляем со значением по умолчанию, если нет.
-    if (!newSearchParams.has('page')) {
-      newSearchParams.set('page', '1'); // Или другое значение по умолчанию
-    }
-  
-    // Обновляем URL
+
     setSearchParams(newSearchParams);
   };
 
   const handlePageChange = (newPage: number) => {
-    const url = document.URL
-    const tagsArr = url.split('tags=')
-    const tags = tagsArr[tagsArr.length - 1]
+    const newSearchParams = new URLSearchParams(searchParams.toString())
 
-    const lvlSortedArr = url.split('lvlSorted=')
-    const lvlSorted = lvlSortedArr[lvlSortedArr.length - 1]
-   
-    setSearchParams({ page: newPage.toString(), onPage: onPage.toString(), lvlSorted});
+    newSearchParams.set('page', newPage.toString())
+
+    setSearchParams(newSearchParams)
   };
 
   return (
     <>
       <div className={`${styles.list_columns_header} gap-2 flex flex-row p-2`}>
-        {/* Ваш код для заголовков колонок */}
+        <h1 className="text-4xl text-center w-[100%] text-[#1c110d] font-bold">Tasks</h1>
       </div>
       <Pagination
         tasks={tasks}

@@ -1,3 +1,4 @@
+import { useNavigate, useSearchParams } from "react-router-dom";
 import { ITask } from "../../../interfaces/task.interface";
 import { Task } from "./task";
 
@@ -22,7 +23,8 @@ export const Pagination: React.FC<PaginationProps> = ({
   if (quantity === null) {
     return null;
   }
-
+  const [searchParams, setSearchParams] = useSearchParams();
+  const navigate = useNavigate();
   const totalPages = Math.ceil(quantity / itemsPerPage);
 
   const handleItemsPerPageChange = (event: React.ChangeEvent<HTMLSelectElement>) => {
@@ -81,21 +83,68 @@ export const Pagination: React.FC<PaginationProps> = ({
 
     return buttons;
   };
+  const updateUrlParams = (params: Record<string, string>) => {
+    const newSearchParams = new URLSearchParams(searchParams);
+  
+    Object.entries(params).forEach(([key, value]) => {
+      if (value) {
+        newSearchParams.set(key, value);
+      } else {
+        newSearchParams.delete(key);
+      }
+    });
 
+    navigate(`/tasks?${newSearchParams.toString()}`);
+  };
+
+  const handSetleLevelFilter = (level: string | null) => {
+    if(level) {
+      updateUrlParams({ level });
+    }
+  };
+
+  
   return (
     <div className="p-6 bg-[#fcf9f8]">
-      <h1 className="text-3xl font-bold text-[#1c110d] text-center mb-6">Tasks</h1>
+      <div className="current_settings mb-10 flex flex-row">
+        <div className="current_level flex flex-row gap-2">
+        <div className="title_current_level flex items-center mr-4">
+          <h1 className="" >Current levels:</h1>
+        </div>
+          <button
+            key="next"
+            onClick={(event) => handSetleLevelFilter(event.currentTarget.textContent)}
+            className={`${searchParams.get('level') === 'Easy' ? 'bg-[#e8d5ce]': 'bg-[#f4eae7] hover:bg-[#e8d5ce]'} px-4 py-2 text-[#1c110d] rounded-lg disabled:opacity-50`}
+          >
+            {"Easy"}
+          </button>
+          <button
+            key="next"
+            onClick={(event) => handSetleLevelFilter(event.currentTarget.textContent)}
+            className={`${searchParams.get('level') === 'Medium' ? 'bg-[#e8d5ce]': 'bg-[#f4eae7] hover:bg-[#e8d5ce]'} px-4 py-2 text-[#1c110d] rounded-lg  disabled:opacity-50`}
+          >
+            {"Medium"}
+          </button>
+          <button
+            key="next"
+            onClick={(event) => handSetleLevelFilter(event.currentTarget.textContent)}
+            className={`${searchParams.get('level') === 'Hard' ? 'bg-[#e8d5ce]': 'bg-[#f4eae7] hover:bg-[#e8d5ce]'} px-4 py-2 text-[#1c110d] rounded-lg  disabled:opacity-50`}
+          >
+            {"Hard"}
+          </button>
+        </div>
+      </div>
 
       {/* Отображение задач */}
       {tasks.map((task: ITask, idx: number) => (
-        <Task key={idx} task={task} idx={idx} />
+        <Task key={idx} task={task} handleSetLevelFilter={handSetleLevelFilter}  updateUrlParams={updateUrlParams} idx={idx} />
       ))}
 
       {/* Пагинация */}
       <div className="flex mt-6 justify-center gap-2">
         {renderPaginationButtons()}
       </div>
-
+      
       {/* Выбор количества задач на странице */}
       <div className="mb-4 mt-5 flex items-center">
         <label htmlFor="itemsPerPage" className="mr-2 text-[#1c110d]">

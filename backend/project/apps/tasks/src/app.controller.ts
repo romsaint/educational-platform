@@ -7,13 +7,14 @@ export class AppController {
 
   @Get('')
   async allTasks(
-    @Query('page') page: number = 1,
-    @Query('onPage') onPage: number = 5,
+    @Query('page', ParseIntPipe) page: number = 1,
+    @Query('onPage', ParseIntPipe) onPage: number = 5,
     @Query('lvlSorted') lvl: string = 'toLow',
     @Query('tags') tags: string = '',
     @Query('date') date: 'old' | 'new' | null = null,
+    @Query('level') level: 'Easy' | "Medium" | "Hard" | 'undefined',
   ) {
-    return await this.appService.allTasks(page, onPage, lvl, tags, date);
+    return await this.appService.allTasks(page, onPage, lvl, tags, date, level);
   }
 
   @Get('task/:id')

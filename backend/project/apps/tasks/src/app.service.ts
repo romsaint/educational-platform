@@ -13,76 +13,103 @@ export class AppService implements OnModuleInit, OnModuleDestroy {
     await client.end();
   }
 
-  async allTasks(page: number, onPage: number, lvlSorted: string, tags: string, date: 'old' | 'new' | null) {
+  async allTasks(
+    page: number,
+    onPage: number,
+    lvlSorted: string,
+    tags: string,
+    date: 'old' | 'new' | null,
+    level: 'Easy' | 'Medium' | 'Hard' | 'undefined'
+  ) {
+
     if (page <= 0 || onPage <= 0) {
-      return { tasks: [], quantity: 0 }; // Возвращаем пустой массив и 0 для quantity
+      return { tasks: [], quantity: 0 };
     }
-  
-    let lvlSortedQuery: string;
-  
-    if (lvlSorted === 'toLow') {
-      lvlSortedQuery = `
-        CASE level
-          WHEN 'Easy' THEN 3
-          WHEN 'Medium' THEN 2
-          WHEN 'Hard' THEN 1
-          ELSE 4
-        END
-      `;
-    } else {
-      lvlSortedQuery = `
-        CASE level
-          WHEN 'Easy' THEN 1
-          WHEN 'Medium' THEN 2
-          WHEN 'Hard' THEN 3
-          ELSE 4
-        END
-      `;
+
+    let levelSortQuery: string = ''
+
+    if (!level || level === 'undefined') {
+      if (lvlSorted === 'toLow') {
+        levelSortQuery = `
+          CASE level
+            WHEN 'Easy' THEN 3
+            WHEN 'Medium' THEN 2
+            WHEN 'Hard' THEN 1
+            ELSE 4
+          END`;
+      } else {
+        levelSortQuery = `
+          CASE level
+            WHEN 'Easy' THEN 1
+            WHEN 'Medium' THEN 2
+            WHEN 'Hard' THEN 3
+            ELSE 4
+          END`;
+      }
     }
-  
+
     let tagsQuery: string = '';
-    const tagValues: string[] = []; // Массив для значений тегов
-    let paramIndex = 1; // Индекс для параметров запроса
-  
+    const tagValues: string[] = [];
+    let paramIndex = 1;
+
     if (tags && typeof tags === 'string') {
-      const tagList = tags.split(',').map(val => `%${val.trim()}%`);
+      const tagList = tags.split(',').map((val) => `%${val.trim()}%`);
       tagList.forEach((tag, index) => {
         tagsQuery += index === 0 ? ` AND (tags LIKE $${paramIndex}` : ` OR tags LIKE $${paramIndex}`;
         tagValues.push(tag);
         paramIndex++;
       });
-      tagsQuery += ')'; // Закрываем скобку для OR-выражений
+      tagsQuery += ')';
     }
-    
-    let dateSortQuery: string = 'date_created DESC'; // Сортировка по умолчанию (newest)
+
+    let dateSortQuery: string = 'date_created DESC';
     if (date === 'old') {
-      dateSortQuery = 'date_created ASC'; // Сортировка по возрастанию (oldest)
+      dateSortQuery = 'date_created ASC';
     }
-  
+
+    let levelFilterQuery: string = '';
+    if (level && level !== 'undefined') {
+      levelFilterQuery = ` AND level = '${level}'`;
+    }
+
     const queryText = `
       SELECT id, level, title, tags, date_created, likes
       FROM tasks
-      WHERE iscommited = true ${tagsQuery}
-      ORDER BY ${lvlSortedQuery}, ${dateSortQuery}
+      WHERE iscommited = true ${tagsQuery} ${levelFilterQuery}
+      ORDER BY ${!level || level === 'undefined' ? `${levelSortQuery},` : ''} ${dateSortQuery}
       LIMIT $${paramIndex} OFFSET $${paramIndex + 1}
     `;
-  
     const offset = (page - 1) * onPage;
     const queryParams = [...tagValues, onPage, offset];
-  
-  
+
+
     try {
       const tasks = await client.query(queryText, queryParams);
-  
+
       const quantityQuery = `
         SELECT COUNT(id)
         FROM tasks
-        WHERE iscommited = true ${tagsQuery}
+        WHERE iscommited = true ${tagsQuery} ${levelFilterQuery}
       `;
-  
+
       const quantity = await client.query(quantityQuery, tagValues);
-  
-      return { tasks: tasks.rows, quantity: parseInt(quantity.rows[0].count, 10) };
+      if (tasks.rows.length === 0 && quantity.rows[0].count > 0) {
+   
+        const queryText = `
+      SELECT id, level, title, tags, date_created, likes
+      FROM tasks
+      WHERE iscommited = true ${tagsQuery} ${levelFilterQuery}
+      ORDER BY ${!level || level === 'undefined' ? `${levelSortQuery},` : ''} ${dateSortQuery}
+      LIMIT $${paramIndex}
+    `;
+        const queryParams = [...tagValues, onPage];
+
+        const tasks = await client.query(queryText, queryParams);
+
+        return { tasks: tasks.rows, quantity: parseInt(quantity.rows[0].count, 10), page: 1}
+      }
+
+      return { tasks: tasks.rows, quantity: parseInt(quantity.rows[0].count, 10), page: null };
     } catch (error) {
       console.error('Error in allTasks:', error);
       throw error;
@@ -92,14 +119,14 @@ export class AppService implements OnModuleInit, OnModuleDestroy {
     const task: ITask = (await client.query(`
         SELECT * FROM tasks
         WHERE id = $1`, [id])).rows[0]
-    
-    const {answer, ...data} = task
- 
+
+    const { answer, ...data } = task
+
     return data;
   }
 
   async tasksByTag(tags: string) {
-    try{
+    try {
       const tagArray = tags.split(',').map(tag => `%${tag.trim()}%`);
 
       let queryText = `SELECT id, title, tags FROM tasks`;
@@ -110,10 +137,10 @@ export class AppService implements OnModuleInit, OnModuleDestroy {
       const tasks = (await client.query(queryText, tags.split(',').map(val => `%${val.trim()}`))).rows
 
       return tasks
-    }catch(e) {
-      if(e instanceof Error) {
+    } catch (e) {
+      if (e instanceof Error) {
         throw new HttpException(e.message, 500)
-      }else{
+      } else {
         throw new HttpException('Error', 500)
       }
     }
@@ -127,7 +154,7 @@ export class AppService implements OnModuleInit, OnModuleDestroy {
       ) 
       select distinct TRIM(tag) from split_tags
   `)).rows
- 
-  return tags
+
+    return tags
   }
 }

@@ -2,15 +2,15 @@ import { ITask } from "../../../interfaces/task.interface";
 import { fetchTags } from "../logic/fetchTags";
 import styles from "../tasks.module.css";
 import { useState, useEffect, useRef } from "react";
-import { useNavigate, useSearchParams } from "react-router-dom";
+import {  Link, useNavigate, useSearchParams } from "react-router-dom";
 
-export const Task = ({ task, idx }: { task: ITask; idx: number }) => {
+export const Task = ({ task, idx, handleSetLevelFilter, updateUrlParams }: { task: ITask; idx: number,  handleSetLevelFilter: (level: string | null) => void, updateUrlParams: (params: Record<string, string>) => void}) => {
   const [searchParams, setSearchParams] = useSearchParams();
   const [showLevelOptions, setShowLevelOptions] = useState(!!searchParams.get("lvlSorted"));
   const [showDateOptions, setShowDateOptions] = useState(!!searchParams.get("dateSorted")); // false = new
   const [showTagOptions, setShowTagOptions] = useState(false);
+  const navigate = useNavigate()
   const [tags, setTags] = useState<{ btrim: string }[]>([]);
-  const navigate = useNavigate();
 
   const [widthTaskText, setWidthTaskText] = useState(0);
   const taskTextRef = useRef<HTMLButtonElement>(null);
@@ -30,20 +30,7 @@ export const Task = ({ task, idx }: { task: ITask; idx: number }) => {
     };
   }, []);
 
-  // Обновление параметров URL
-  const updateUrlParams = (params: Record<string, string>) => {
-    const newSearchParams = new URLSearchParams(searchParams);
-  
-    Object.entries(params).forEach(([key, value]) => {
-      if (value) {
-        newSearchParams.set(key, value);
-      } else {
-        newSearchParams.delete(key);
-      }
-    });
 
-    navigate(`/tasks?${newSearchParams.toString()}`);
-  };
 
   // Фильтрация по уровню сложности
   const handleLevelFilter = (sorted: boolean) => {
@@ -51,6 +38,7 @@ export const Task = ({ task, idx }: { task: ITask; idx: number }) => {
     updateUrlParams({ lvlSorted });
     setShowLevelOptions(!sorted);
   };
+
 
   const handleDateFilter = (sorted: boolean) => {
     const dateSorted = sorted ? "old" : "new";
@@ -81,6 +69,10 @@ export const Task = ({ task, idx }: { task: ITask; idx: number }) => {
     setShowTagOptions(!showTagOptions);
   };
 
+  function handleClickTitleTask(id: number) {
+    navigate(`/task/${id}`)
+  }
+  
   return (
     <div className="task flex flex-row mb-2">
       {/* ФИЛЬТР ПО УРОВНЮ СЛОЖНОСТИ (только для первого task) */}
@@ -114,6 +106,7 @@ export const Task = ({ task, idx }: { task: ITask; idx: number }) => {
       )}
 
       <button
+      onClick={(event) => handleSetLevelFilter(event.currentTarget.textContent)}
         className={`${styles.task_lvl} hover_light_orange mr-2 text-[${
           task.level === "Easy"
             ? "#499c5e"
@@ -184,6 +177,7 @@ export const Task = ({ task, idx }: { task: ITask; idx: number }) => {
       {/* ЗАДАЧА */}
       <button
         ref={taskTextRef}
+        onClick={() => handleClickTitleTask(task.id)}
         className={`${styles.task_text} mr-2 flex flex-row justify-between items-center hover_light_orange w-100 gap-1 p-2 bg-[#f4eae7] rounded`}
       >
         <h3 className="text-[#1c110d] text-sm font-medium leading-normal">
