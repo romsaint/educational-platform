@@ -23,8 +23,8 @@ export class AuthController {
   }
 
   @Post('registration-with-role')
-
-  async registrationWithRole(@Body() user: IRegistrationUserWithRole) {
-    return await this.authService.registrationWithRole(user)
+  @UseInterceptors(FileInterceptor('file', uploadFile))
+  async registrationWithRole(@Body() user: IRegistrationUserWithRole, @UploadedFile() file: Express.Multer.File | undefined) {
+    return await this.authService.registrationWithRole(user, file)
   }
 }

@@ -68,7 +68,8 @@ export class AuthService {
         }
     }
 
-    async registrationWithRole(user: IRegistrationUserWithRole): Promise<IUserWitoutPassword | {[key: string]: any}> {
+    async registrationWithRole(user: IRegistrationUserWithRole, file: Express.Multer.File | undefined): Promise<IUserWitoutPassword | {[key: string]: any}> {
+        console.log(user)
         try {
             const isExists: IUser = (await client.query(`
                 SELECT unique_id FROM users
@@ -80,12 +81,16 @@ export class AuthService {
             }
      
             const hashPassword = await bcrypt.hash(user.password, 10)
-
+            let fileName
+            if(file) {
+                fileName = uniqueFileName(file)
+            }
+        
             const created: IUser = (await client.query(`
-                INSERT INTO users (username, password, unique_id, role)  
-                VALUES ($1, $2, $3, $4)
+                INSERT INTO users (username, password, unique_id, role, avatar)  
+                VALUES ($1, $2, $3, $4, $5)
                 RETURNING *
-            `, [user.username, hashPassword, user.unique_id, user.role])).rows[0]
+            `, [user.username, hashPassword, user.unique_id, user.role, fileName ? fileName : null])).rows[0]
 
             const { password, ...data } = created
 

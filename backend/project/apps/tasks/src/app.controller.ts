@@ -31,4 +31,9 @@ export class AppController {
   async allTags(): Promise<string[]> { 
     return this.appService.allTags()
   }
+
+  @Post('create-task')
+  async createTask(@Body() task) { 
+    return await this.appService.createTask(task)
+  }
 }

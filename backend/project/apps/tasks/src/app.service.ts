@@ -174,4 +174,14 @@ export class AppService implements OnModuleInit, OnModuleDestroy {
 
     return tags
   }
+
+  async createTask(task: {[key: string]: any}) {
+    if(task.user.role === 'USER') {
+      return {ok: false, msg: "Access denied"}
+    }
+    await client.query(`
+        INSERT INTO tasks (title, description, level, created_by, iscommited, tags, test_cases, answer)
+        VALUES ($1, $2, $3, $4, $5, $6, $7, $8)
+    `, [task.title, task.description, task.level, task.user.id, false, task.tags, task.testCases, task.answer])
+  }
 }

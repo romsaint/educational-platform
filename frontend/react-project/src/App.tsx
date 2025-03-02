@@ -7,7 +7,7 @@ import { Signup } from "./pages/registration/registration/registration";
 import { Login } from "./pages/registration/login/login";
 import { ErrorContextProvider } from "./components/context/error.context";
 import { Task } from "./pages/task/task";
-import { CreateTask } from "./pages/createTask/createTask.module";
+import { CreateTask } from "./pages/createTask/createTask";
 import { Profile } from "./pages/profile/profile";
 import { AdminRegistration } from "./pages/adminRegistration/adminRegistration";
 

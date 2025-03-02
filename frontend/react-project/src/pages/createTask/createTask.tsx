@@ -1,16 +1,24 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
-import styles from './createTask.module.css'
+import Cookie from 'js-cookie'
 
 export function CreateTask() {
   const navigate = useNavigate();
 
-  // Состояния для полей формы
+  const [user, setUser] = useState<{[key: string]: any} | undefined>(undefined)
+  useEffect(() => {
+    const data = Cookie.get('user')
+    if(data) {
+      setUser(JSON.parse(data))
+    }
+  })
+
   const [title, setTitle] = useState("");
   const [description, setDescription] = useState("");
   const [level, setLevel] = useState("Easy");
   const [tags, setTags] = useState("");
   const [testCases, setTestCases] = useState("");
+  const [answer, setAnswer] = useState("");
 
   // Обработчик отправки формы
   const handleSubmit = async (e: React.FormEvent) => {
@@ -21,13 +29,15 @@ export function CreateTask() {
       title,
       description,
       level,
-      tags: tags.split(",").map((tag) => tag.trim()),
-      test_cases: testCases.split(",").map((testCase) => testCase.trim()),
+      tags,
+      testCases,
+      answer,
+      user
     };
 
     try {
       // Отправляем данные на сервер
-      const response = await fetch("http://127.0.0.1:3001/tasks", {
+      const response = await fetch("http://127.0.0.1:3001/tasks/create-task", {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
@@ -49,8 +59,12 @@ export function CreateTask() {
   return (
     <div className="px-40 flex flex-1 justify-center py-5">
       <div className="mt-8 layout-content-container flex flex-col max-w-[960px] flex-1">
-        <h1 className="text-[#1c110d] text-3xl font-bold mb-6">Create task</h1>
-        <form onSubmit={handleSubmit} className="flex flex-col gap-4">
+        <h1 className="text-[#1c110d] text-3xl font-bold mb-6 text-center">Create task</h1>
+        {user === undefined ? "" : user?.role === 'USER' ? (
+          <h1 className="text-center text-2xl">Access denied, you are not an admin or moderator</h1>
+        ) :
+        (
+          <form onSubmit={handleSubmit} className="flex flex-col gap-4">
           {/* Поле для заголовка */}
           <div className="flex flex-col gap-2">
             <label className="text-[#1c110d] text-sm font-medium">Title</label>
@@ -101,7 +115,6 @@ export function CreateTask() {
             />
           </div>
 
-          {/* Поле для тестовых случаев */}
           <div className="flex flex-col gap-2">
             <label className="text-[#1c110d] text-sm font-medium">Testcases (comma separated; E.g yourFunc(1), yourFunc(2) ...)</label>
             <input
@@ -113,7 +126,17 @@ export function CreateTask() {
             />
           </div>
 
-          {/* Кнопка отправки формы */}
+          <div className="flex flex-col gap-2">
+            <label className="text-[#1c110d] text-sm font-medium">Answers (answer is the answers to your testcases, comma separated; E.g 1, 2 ...)</label>
+            <input
+              type="text"
+              value={answer}
+              onChange={(e) => setAnswer(e.target.value)}
+              className="px-3 py-2 rounded-md bg-[#f4eae7] text-[#1c110d] focus:outline-none"
+              required
+            />
+          </div>
+
           <button
             type="submit"
             className="mt-4 hover_orange px-4 py-2 bg-[#f14b0e] text-[#fcf9f8] rounded-md hover:bg-[#e0440d] transition-colors"
@@ -121,6 +144,8 @@ export function CreateTask() {
             Create task
           </button>
         </form>
+        )}
+        
       </div>
     </div>
   );
