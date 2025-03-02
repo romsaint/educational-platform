@@ -1,0 +1,23 @@
+.wrap {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+  }
+  
+  .already_logged {
+    padding: 2rem 0;
+  }
+  
+  .reg_input:focus, input:active, input, input::after, input::before {
+    outline: 0;
+    border: 0;
+}
+.reg_input:focus, .reg_input {
+    border-bottom: 2px solid #d1400a;
+}
+.wrap {
+    align-items: center;
+    justify-content: center;
+    display: flex;
+    margin-top: 2rem;
+}

@@ -1,6 +1,10 @@
-import { Body, Controller, Get, Post, Res } from '@nestjs/common';
+import { BadRequestException, Body, Controller, Get, Post, Res, UploadedFile, UseInterceptors } from '@nestjs/common';
 import { AuthService } from './auth.service';
-import { ILoginUser, IRegistrationUser } from '@app/educational-lib';
+import { ILoginUser, IRegistrationUser, IRegistrationUserWithRole } from '@app/educational-lib';
+import { FileInterceptor } from '@nestjs/platform-express';
+import { diskStorage } from 'multer';
+import { extname } from 'path';
+import { uploadFile } from 'apps/shared/uploadFile';
 
 
 @Controller('auth')
@@ -8,12 +12,19 @@ export class AuthController {
   constructor(private readonly authService: AuthService) { }
 
   @Post('registration')
-  async registration(@Body() user: IRegistrationUser) {
-    return await this.authService.registration(user)
+  @UseInterceptors(FileInterceptor('file', uploadFile))
+  async registration(@Body() user: IRegistrationUser, @UploadedFile() file: Express.Multer.File | undefined) {
+    return await this.authService.registration(user, file)
   }
 
   @Post('login')
   async login(@Body() user: ILoginUser) {
     return await this.authService.login(user)
+  }
+
+  @Post('registration-with-role')
+
+  async registrationWithRole(@Body() user: IRegistrationUserWithRole) {
+    return await this.authService.registrationWithRole(user)
   }
 }

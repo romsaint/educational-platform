@@ -7,6 +7,10 @@ import { Signup } from "./pages/registration/registration/registration";
 import { Login } from "./pages/registration/login/login";
 import { ErrorContextProvider } from "./components/context/error.context";
 import { Task } from "./pages/task/task";
+import { CreateTask } from "./pages/createTask/createTask.module";
+import { Profile } from "./pages/profile/profile";
+import { AdminRegistration } from "./pages/adminRegistration/adminRegistration";
+
 
 function App() {
   return (
@@ -20,6 +24,10 @@ function App() {
             <Route path="/registration" element={<Signup />} />
             <Route path="/login" element={<Login />} />
             <Route path="/task/:id" element={<Task />} />
+            <Route path="/profile" element={<Profile />} />
+            {/* FOR ADMIIN */}
+            <Route path="/create-task" element={<CreateTask />} />
+            <Route path="/registration-with-role" element={<AdminRegistration />} />
           </Routes>
         </BrowserRouter>
       </Wrap>

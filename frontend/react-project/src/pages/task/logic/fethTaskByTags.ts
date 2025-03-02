@@ -1,13 +1,14 @@
 import { ITask } from "../../../interfaces/task.interface"
 
-export async function fetchTasksByTags(tags: string): Promise<ITask[]> {
+export async function fetchTasksByTags(tags: string, id: string): Promise<ITask[]> {
     try {
+      console.log(id)
         const res = await fetch(`http://127.0.0.1:3001/tasks/tasksByTag`, {
             method: 'POST',
             headers: {
               'Content-Type': 'application/json', // Указываем, что в теле запроса - JSON
             },
-            body: JSON.stringify({ tags }), // Отправляем JSON-объект
+            body: JSON.stringify({ tags, id }), // Отправляем JSON-объект
           });
   
       if (!res.ok) {
@@ -15,7 +16,7 @@ export async function fetchTasksByTags(tags: string): Promise<ITask[]> {
       }
   
       const data: ITask[] = await res.json(); // Указываем тип возвращаемых данных
-      console.log(data);
+
       return data;
     } catch (error) {
       console.error("Fetching tasks by tags failed:", error);

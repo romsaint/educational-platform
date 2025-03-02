@@ -1,5 +1,4 @@
 export type TaskLevels = 'Hard' | "Easy" | "Medium"
-export type TaskStatus = 'Watched' | "Solved" | "Tried"
 
 export interface ITask {
     id: number,
@@ -11,5 +10,6 @@ export interface ITask {
     answer: string,
     iscommited: boolean,
     tags: string,
-    likes: number
+    likes: number,
+    test_cases: string
 }

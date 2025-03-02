@@ -41,51 +41,33 @@ export function Header() {
           <div className="flex items-center gap-9">
             <a
               className={`${styles.link_nav} text-[#1c110d] text-sm font-medium leading-normal`}
-              href="#"
+              href="/courses"
             >
               Courses
             </a>
             <Link to={"/tasks?lvlSorted=toLow&dateSorted=new"}>
               <a
                 className={`${styles.link_nav} text-[#1c110d] text-sm font-medium leading-normal`}
-                href="#"
               >
                 Tasks
               </a>
             </Link>
-            {isReg !== undefined ? (
-              <Link to={'/profile'}>
-                <a
-                className={`${styles.link_nav} text-[#1c110d] text-sm font-medium leading-normal`}
-                href="#"
-              >
-                Profile
-              </a>
-              </Link>
-            ) : (
-              ""
-            )}
-            <a
-              className={`${styles.link_nav} text-[#1c110d] text-sm font-medium leading-normal`}
-              href="#"
-            >
-              Community
-            </a>
           </div>
           <div className="flex gap-2">
-            <button className="hover_orange flex min-w-[84px] max-w-[480px] cursor-pointer items-center justify-center overflow-hidden rounded-xl h-10 px-4 bg-[#f14b0e] text-[#fcf9f8] text-sm font-bold leading-normal tracking-[0.015em]">
-              {isReg === undefined ? (
-                <Link to="/registration">
-                  <span className="truncate">Registration</span>
-                </Link>
+            {isReg === undefined ? (
+                  <a href="/registration" className={`${styles.link_header_reg} truncate`}>
+                    <button className="hover_orange flex min-w-[84px] max-w-[480px] cursor-pointer items-center justify-center overflow-hidden h-10 px-4 bg-[#f14b0e] text-[#fcf9f8] text-sm font-bold leading-normal tracking-[0.015em]">
+                      Registration
+                    </button>
+                  </a>
               ) : (
-                <Link to="/profile">
-                  <span className="truncate">
-                    Hello {JSON.parse(isReg).username}!
-                  </span>
-                </Link>
+                  <a href="/profile" className={`${styles.link_header_reg} truncate`}>
+                    <button className="hover_orange flex min-w-[84px] max-w-[480px] cursor-pointer items-center justify-center overflow-hidden h-10 px-4 bg-[#f14b0e] text-[#fcf9f8] text-sm font-bold leading-normal tracking-[0.015em]">
+                        {JSON.parse(isReg).username}
+                    </button>
+                  </a>
               )}
-            </button>
+
             <button className="hover_orange flex max-w-[480px] cursor-pointer items-center justify-center overflow-hidden rounded-xl h-10 bg-[#f4eae7] text-[#1c110d] gap-2 text-sm font-bold leading-normal tracking-[0.015em] min-w-0 px-2.5">
               <div
                 className="text-[#1c110d]"

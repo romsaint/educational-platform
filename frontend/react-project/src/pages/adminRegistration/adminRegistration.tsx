@@ -1,13 +1,12 @@
 import { useEffect, useState } from "react";
-import styles from "./registration.module.css";
+import styles from "./adminRegistration.module.css";
 import Cookies from "js-cookie";
-import { FormRegisration } from "./components/formRegistration";
+import { FormAdminRegistration } from "./components/formAdminRegistration";
 import { Link } from "react-router-dom";
-import { Error } from "../../../components/erorr";
-import { useError } from "../../../components/context/error.context";
+import { Error } from "../../components/erorr";
+import { useError } from "../../components/context/error.context";
 
-
-export function Signup() {
+export function AdminRegistration() {
   const [isReg, setIsReg] = useState<string | undefined>(undefined);
   const {error, setError} = useError()
 
@@ -20,10 +19,10 @@ export function Signup() {
     <>
       <div className={`${styles.wrap} w-100`}>
         {error ? <Error message={error} setErr={setError} /> : ''}
-        <div className="w-full max-w-md bg-white rounded-lg shadow-lg p-8 mb-8">
+        <div className="w-full max-w-md bg-white rounded-lg shadow-lg p-8">
           <div className="text-center">
             <svg
-              className="mx-auto mb-4"
+              className="mx-auto mb-6"
               width="64"
               height="64"
               viewBox="0 0 64 64"
@@ -40,12 +39,9 @@ export function Signup() {
                 fill="#fcf9f8"
               />
             </svg>
-            {
-              isReg === undefined ? 
-              (<h2 className="text-2xl font-bold text-[#1c110d] mb-2">
-                Create an Account
-              </h2>) : ''
-            }
+            <h2 className="text-2xl font-bold text-[#1c110d] mb-2">
+              Create an Account
+            </h2>
             {isReg === undefined ? (
               <p className="text-sm text-[#9c5f49]">
                 Join CodeCamp to start your coding journey.
@@ -56,7 +52,7 @@ export function Signup() {
           </div>
 
           {isReg === undefined ? (
-            <FormRegisration />
+            <FormAdminRegistration />
           ) : (
             <h1 className={`${styles.already_logged} text-center text-2xl`}>
               You've already logged in

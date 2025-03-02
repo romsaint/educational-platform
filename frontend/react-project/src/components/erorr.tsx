@@ -1,8 +1,4 @@
-import React, { useEffect, useState } from "react";
-
-interface ErrorWindowProps {
-  message: string;
-}
+import { useEffect, useState } from "react";
 
 export const Error = ({ message, setErr }: {message: string, setErr: any}) => {
   const [visible, setVisible] = useState(true);

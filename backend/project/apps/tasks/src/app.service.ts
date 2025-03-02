@@ -125,23 +125,40 @@ export class AppService implements OnModuleInit, OnModuleDestroy {
     return data;
   }
 
-  async tasksByTag(tags: string) {
+  async tasksByTag(tags: string, id: string) {
     try {
-      const tagArray = tags.split(',').map(tag => `%${tag.trim()}%`);
-
-      let queryText = `SELECT id, title, tags FROM tasks`;
-      if (tagArray.length > 0) {
-        queryText += ` WHERE ${tagArray.map((_, index) => `tags LIKE $${index + 1}`).join(' OR ')}`;
+      let tagArray: string[] = []
+      const tagArrayFull = tags.split(',').map(tag => `${tag.trim()}`);
+      for(const i of tagArrayFull) {
+        if(i.split(' ').length > 1) {
+          tagArray.push(...i.split(' '))
+        }else{
+          tagArray.push(i)
+        }
       }
-      queryText += ' LIMIT 5'
-      const tasks = (await client.query(queryText, tags.split(',').map(val => `%${val.trim()}`))).rows
-
-      return tasks
+      tagArray = tagArray.map(val => `%${val}%`)
+      
+      let queryText = `SELECT id, title, tags FROM tasks`;
+  
+      if (tagArray.length > 0) {
+        queryText += ` WHERE (${tagArray.map((_, index) => `tags LIKE $${index + 1}`).join(' OR ')})`;
+      }
+  
+      queryText += ` AND id != $${tagArray.length + 1}`;
+  
+      queryText += ' LIMIT 5';
+  
+  
+      const queryParams = [...tagArray, Number(id)];
+  
+      const tasks = (await client.query(queryText, queryParams)).rows;
+  
+      return tasks;
     } catch (e) {
       if (e instanceof Error) {
-        throw new HttpException(e.message, 500)
+        throw new HttpException(e.message, 500);
       } else {
-        throw new HttpException('Error', 500)
+        throw new HttpException('Error', 500);
       }
     }
   }

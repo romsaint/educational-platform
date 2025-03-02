@@ -1,11 +1,12 @@
-import { client, ILoginUser, IRegistrationUser, IUser } from '@app/educational-lib';
-import { HttpException, Injectable, UnauthorizedException } from '@nestjs/common';
+import { client, ILoginUser, IRegistrationUser, IRegistrationUserWithRole, IUser, IUserWitoutPassword } from '@app/educational-lib';
+import { HttpException, Injectable } from '@nestjs/common';
+import { uniqueFileName } from 'apps/shared/uniqueFilename';
 import * as bcrypt from 'bcryptjs'
 
 
 @Injectable()
 export class AuthService {
-    async registration(user: IRegistrationUser) {
+    async registration(user: IRegistrationUser, file: Express.Multer.File | undefined): Promise<IUserWitoutPassword | {[key: string]: any}> {
         try {
             const isExists: IUser = (await client.query(`
                 SELECT unique_id FROM users
@@ -17,24 +18,29 @@ export class AuthService {
             }
      
             const hashPassword = await bcrypt.hash(user.password, 10)
+            let fileName
+            if(file) {
+                fileName = uniqueFileName(file)
+            }
 
             const created: IUser = (await client.query(`
-                INSERT INTO users (username, password,  unique_id)  
-                VALUES ($1, $2, $3)
+                INSERT INTO users (username, password,  unique_id, avatar)  
+                VALUES ($1, $2, $3, $4)
                 RETURNING *
-            `, [user.username, hashPassword, user.unique_id])).rows[0]
+            `, [user.username, hashPassword, user.unique_id, fileName ? fileName : null])).rows[0]
 
             const { password, ...data } = created
 
             return data
         } catch (e) {
             if (e instanceof Error) {
-                throw new HttpException(e.message, 500)
+                return {ok: false, msg: e.message}
             }
+            return {ok: false, msg: 'Error ('}
         }
     }
 
-    async login(user: ILoginUser) {
+    async login(user: ILoginUser): Promise<IUserWitoutPassword | {[key: string]: any}> {
         try {
             const isExists: IUser = (await client.query(`
                 SELECT * FROM users
@@ -56,8 +62,39 @@ export class AuthService {
             }
         } catch (e) {
             if (e instanceof Error) {
-                throw new HttpException(e.message, 500)
+                return {ok: false, msg: e.message}
             }
+            return {ok: false, msg: 'Error ('}
+        }
+    }
+
+    async registrationWithRole(user: IRegistrationUserWithRole): Promise<IUserWitoutPassword | {[key: string]: any}> {
+        try {
+            const isExists: IUser = (await client.query(`
+                SELECT unique_id FROM users
+                WHERE unique_id = $1  
+            `, [user.unique_id])).rows[0]
+            
+            if (isExists) {
+                 return {ok: false, msg: 'User already exists!'}
+            }
+     
+            const hashPassword = await bcrypt.hash(user.password, 10)
+
+            const created: IUser = (await client.query(`
+                INSERT INTO users (username, password, unique_id, role)  
+                VALUES ($1, $2, $3, $4)
+                RETURNING *
+            `, [user.username, hashPassword, user.unique_id, user.role])).rows[0]
+
+            const { password, ...data } = created
+
+            return data
+        } catch (e) {
+            if (e instanceof Error) {
+               return {ok: false, msg: e.message}
+            }
+            return {ok: false, msg: 'Error ('}
         }
     }
 }

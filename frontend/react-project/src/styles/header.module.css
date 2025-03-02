@@ -36,3 +36,6 @@ header {
   transform: scaleX(1); /* Линия появляется */
   transform-origin: bottom left; /* Точка начала трансформации */
 }
+.link_header_profile, .link_header_reg {
+  border-radius: 0.75rem;
+}

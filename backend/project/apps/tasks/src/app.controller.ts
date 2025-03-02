@@ -23,8 +23,8 @@ export class AppController {
   }
 
   @Post('tasksByTag')
-  async tasksByTag(@Body('tags') data: string) {
-    return await this.appService.tasksByTag(data)
+  async tasksByTag(@Body() data) {
+    return await this.appService.tasksByTag(data.tags, data.id)
   }
 
   @Get('all-tags')
