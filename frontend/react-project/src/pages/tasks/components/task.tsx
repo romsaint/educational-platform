@@ -1,4 +1,4 @@
-import { ITask } from "../../../interfaces/task.interface";
+import { ITask } from "../../../interfaces/tasks/task.interface";
 import { fetchTags } from "../logic/fetchTags";
 import styles from "../tasks.module.css";
 import { useState, useEffect, useRef } from "react";

@@ -1,7 +1,7 @@
 import { useEffect, useState } from "react";
 import { CodeEditor } from "./codeEditor";
 import { Output } from "./output";
-import { ITask } from "../../../interfaces/task.interface";
+import { ITask } from "../../../interfaces/tasks/task.interface";
 import { fetchTask } from "../logic/fethTask";
 import { Sidebar } from "./sidebar";
 

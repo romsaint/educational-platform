@@ -3,7 +3,7 @@ import { useSearchParams } from "react-router-dom";
 import styles from "../tasks.module.css";
 import { Pagination } from "./pagination";
 import { fetchTasks } from "../logic/fethTasks";
-import { ITask } from "../../../interfaces/task.interface";
+import { ITask } from "../../../interfaces/tasks/task.interface";
 
 const TaskList = () => {
   const [tasks, setTasks] = useState<ITask[] | []>([]);

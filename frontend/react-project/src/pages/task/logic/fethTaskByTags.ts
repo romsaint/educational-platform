@@ -1,4 +1,4 @@
-import { ITask } from "../../../interfaces/task.interface"
+import { ITask } from "../../../interfaces/tasks/task.interface"
 
 export async function fetchTasksByTags(tags: string, id: string): Promise<ITask[]> {
     try {

@@ -1,6 +1,6 @@
 import { useEffect, useState } from "react";
 import { fetchTasksByTags } from "../logic/fethTaskByTags";
-import { ITask } from "../../../interfaces/task.interface";
+import { ITask } from "../../../interfaces/tasks/task.interface";
 import { useNavigate, useSearchParams } from "react-router-dom";
 
 export function Sidebar({

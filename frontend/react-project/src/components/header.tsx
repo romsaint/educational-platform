@@ -4,10 +4,12 @@ import Cookie from "js-cookie";
 import { useEffect, useState } from "react";
 
 export function Header() {
-  const [isReg, setIsReg] = useState<string | undefined>(undefined);
+  const [isReg, setIsReg] = useState<{[key: string]: any} | undefined>(undefined);
   useEffect(() => {
     const user = Cookie.get("user");
-    setIsReg(user);
+    if(user) {
+      setIsReg(JSON.parse(user));
+    }
   }, []);
   return (
     <>
@@ -52,6 +54,15 @@ export function Header() {
                 Tasks
               </a>
             </Link>
+            {isReg ? isReg.role !== "USER" ? (
+              <Link to={"/create-task"}>
+                <a
+                  className={`${styles.link_nav} text-[#1c110d] text-sm font-medium leading-normal`}
+                >
+                  Create task
+                </a>
+              </Link>
+            ) : '' : ''}
             {isReg !== undefined ? (
               <Link to={"/login"}>
                 <a
@@ -73,7 +84,7 @@ export function Header() {
                 <>
                   <a href="/profile" className={`${styles.link_header_reg} truncate`}>
                     <button className="hover_orange flex min-w-[84px] max-w-[480px] cursor-pointer items-center justify-center overflow-hidden h-10 px-4 bg-[#f4eae7] text-[#1c110d] text-lg font-bold leading-normal tracking-[0.015em]">
-                        {JSON.parse(isReg).username}
+                        {isReg.username}
                     </button>
                   </a>
                 </>

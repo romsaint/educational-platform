@@ -4,8 +4,8 @@ import { useRef, useState } from "react";
 import styles from "../adminRegistration.module.css";
 import { checkUnique } from "../../registration/registration/logic/checkUnique";
 import { useError } from "../../../components/context/error.context";
-// import Cookies from "js-cookie";
-// Cookies.remove('user')
+
+
 export function FormAdminRegistration() {
     const [uniqueChecked, setUniqueChecked] = useState<boolean | undefined | "Data">(undefined)
     const [file, setFile] = useState<null | File>(null)

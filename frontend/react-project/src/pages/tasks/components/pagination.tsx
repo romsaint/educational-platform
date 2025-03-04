@@ -1,5 +1,5 @@
 import { useNavigate, useSearchParams } from "react-router-dom";
-import { ITask } from "../../../interfaces/task.interface";
+import { ITask } from "../../../interfaces/tasks/task.interface";
 import { Task } from "./task";
 
 

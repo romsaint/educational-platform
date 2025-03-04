@@ -5,7 +5,7 @@ import { TaskWithoutAnswer } from '@app/educational-lib';
 
 
 @Injectable()
-export class AppService implements OnModuleInit, OnModuleDestroy {
+export class TasksService implements OnModuleInit, OnModuleDestroy {
   async onModuleInit() {
     await client.connect();
   }
@@ -82,106 +82,173 @@ export class AppService implements OnModuleInit, OnModuleDestroy {
     const offset = (page - 1) * onPage;
     const queryParams = [...tagValues, onPage, offset];
 
-
     try {
       const tasks = await client.query(queryText, queryParams);
 
       const quantityQuery = `
-        SELECT COUNT(id)
-        FROM tasks
-        WHERE iscommited = true ${tagsQuery} ${levelFilterQuery}
+      SELECT COUNT(id)
+      FROM tasks
+      WHERE iscommited = true ${tagsQuery} ${levelFilterQuery}
       `;
 
       const quantity = await client.query(quantityQuery, tagValues);
       if (tasks.rows.length === 0 && quantity.rows[0].count > 0) {
-   
+
         const queryText = `
-      SELECT id, level, title, tags, date_created, likes
-      FROM tasks
-      WHERE iscommited = true ${tagsQuery} ${levelFilterQuery}
-      ORDER BY ${!level || level === 'undefined' ? `${levelSortQuery},` : ''} ${dateSortQuery}
-      LIMIT $${paramIndex}
-    `;
+        SELECT id, level, title, tags, date_created, likes
+        FROM tasks
+        WHERE iscommited = true ${tagsQuery} ${levelFilterQuery}
+        ORDER BY ${!level || level === 'undefined' ? `${levelSortQuery},` : ''} ${dateSortQuery}
+        LIMIT $${paramIndex}
+        `;
         const queryParams = [...tagValues, onPage];
+
 
         const tasks = await client.query(queryText, queryParams);
 
-        return { tasks: tasks.rows, quantity: parseInt(quantity.rows[0].count, 10), page: 1}
+        return { tasks: tasks.rows, quantity: parseInt(quantity.rows[0].count, 10), page: 1 }
       }
 
       return { tasks: tasks.rows, quantity: parseInt(quantity.rows[0].count, 10), page: null };
-    } catch (error) {
-      console.error('Error in allTasks:', error);
-      throw error;
+    } catch (e) {
+      if (e instanceof Error) {
+        return { msg: e.message, ok: false }
+      } else {
+        return {msg: 'Error', ok: false}
+      }
     }
   }
-  async task(id: number): Promise<TaskWithoutAnswer> {
-    const task: ITask = (await client.query(`
+  async task(id: number): Promise<TaskWithoutAnswer | {[key: string]: any}> {
+    try{
+      const task: ITask = (await client.query(`
         SELECT * FROM tasks
         WHERE id = $1`, [id])).rows[0]
 
     const { answer, ...data } = task
 
     return data;
+    }catch(e) {
+      if (e instanceof Error) {
+        return { msg: e.message, ok: false }
+      } else {
+        return {msg: 'Error', ok: false}
+      }
+    }
   }
 
   async tasksByTag(tags: string, id: string) {
     try {
       let tagArray: string[] = []
       const tagArrayFull = tags.split(',').map(tag => `${tag.trim()}`);
-      for(const i of tagArrayFull) {
-        if(i.split(' ').length > 1) {
+      for (const i of tagArrayFull) {
+        if (i.split(' ').length > 1) {
           tagArray.push(...i.split(' '))
-        }else{
+        } else {
           tagArray.push(i)
         }
       }
       tagArray = tagArray.map(val => `%${val}%`)
-      
+
       let queryText = `SELECT id, title, tags FROM tasks`;
-  
+
       if (tagArray.length > 0) {
         queryText += ` WHERE (${tagArray.map((_, index) => `tags LIKE $${index + 1}`).join(' OR ')})`;
       }
-  
+
       queryText += ` AND id != $${tagArray.length + 1}`;
-  
+
       queryText += ' LIMIT 5';
-  
-  
+
+
       const queryParams = [...tagArray, Number(id)];
-  
+
       const tasks = (await client.query(queryText, queryParams)).rows;
-  
+
       return tasks;
     } catch (e) {
       if (e instanceof Error) {
-        throw new HttpException(e.message, 500);
+        return { msg: e.message, ok: false }
       } else {
-        throw new HttpException('Error', 500);
+        return {msg: 'Error', ok: false}
       }
     }
   }
 
-  async allTags(): Promise<string[]> {
-    const tags = (await client.query(`
-      WITH split_tags AS (
-          SELECT UNNEST(STRING_TO_ARRAY(tags, ',')) AS tag
-          FROM tasks
-      ) 
-      select distinct TRIM(tag) from split_tags
-  `)).rows
-
-    return tags
+  async allTags(): Promise<string[] | {[key: string]: any}> {
+    try{
+      const tags = (await client.query(`
+        WITH split_tags AS (
+            SELECT UNNEST(STRING_TO_ARRAY(tags, ',')) AS tag
+            FROM tasks
+        ) 
+        select distinct TRIM(tag) from split_tags
+    `)).rows
+  
+      return tags
+  
+    }catch(e) {
+      if (e instanceof Error) {
+        return { msg: e.message, ok: false }
+      } else {
+        return {msg: 'Error', ok: false}
+      }
+    }
   }
 
-  async createTask(task: {[key: string]: any}) {
-    if(task.user.role === 'USER') {
-      return {ok: false, msg: "Access denied"}
+  async createTask(task: { [key: string]: any }) {
+    try {
+      if (task.user.role === 'USER') {
+        return { ok: false, msg: "Access denied" }
+      }
+      await client.query(`
+          INSERT INTO tasks (title, description, level, created_by, iscommited, tags, test_cases, answer)
+          VALUES ($1, $2, $3, $4, $5, $6, $7, $8)
+      `, [task.title, task.description, task.level.toUpperCase(), task.user.id, false, task.tags, task.testCases, task.answer])
+
+      return { ok: true, msg: "Created" }
+    } catch (e) {
+      if (e instanceof Error) {
+        return { msg: e.message, ok: false }
+      } else {
+        return {msg: 'Error', ok: false}
+      }
     }
-    await client.query(`
-        INSERT INTO tasks (title, description, level, created_by, iscommited, tags, test_cases, answer)
-        VALUES ($1, $2, $3, $4, $5, $6, $7, $8)
-    `, [task.title, task.description, task.level, task.user.id, false, task.tags, task.testCases, task.answer])
+  }
+
+  async uncommitedTasks() {
+    try {
+      const tasks = (await client.query(`
+        SELECT id, level, title, tags, date_created, likes
+        FROM tasks
+        WHERE iscommited = false
+      `)).rows
+      return tasks
+    } catch (e) {
+      if (e instanceof Error) {
+        return { msg: e.message, ok: false }
+      } else {
+        return {msg: 'Error', ok: false}
+      }
+    }
+  }
+
+
+  async commitTask(task: { taskId: number, role: string }) {
+    console.log(task)
+    try {
+      if (task.role !== 'USER') {
+        await client.query(`
+          UPDATE tasks
+          SET iscommited = true
+          WHERE id = $1
+      `, [task.taskId])
+      }
+    } catch (e) {
+      if (e instanceof Error) {
+        return { msg: e.message, ok: false }
+      } else {
+        return {msg: 'Error', ok: false}
+      }
+    }
   }
 }

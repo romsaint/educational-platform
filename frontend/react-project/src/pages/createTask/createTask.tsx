@@ -1,17 +1,20 @@
 import { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import Cookie from 'js-cookie'
+import { useError } from "../../components/context/error.context";
+import { Error } from "../../components/erorr";
 
 export function CreateTask() {
   const navigate = useNavigate();
+  const { error, setError } = useError();
+  const [user, setUser ] = useState<{ [key: string]: any } | undefined>(undefined);
 
-  const [user, setUser] = useState<{[key: string]: any} | undefined>(undefined)
   useEffect(() => {
-    const data = Cookie.get('user')
-    if(data) {
-      setUser(JSON.parse(data))
+    const data = Cookie.get('user');
+    if (data) {
+      setUser (JSON.parse(data));
     }
-  })
+  }, []);
 
   const [title, setTitle] = useState("");
   const [description, setDescription] = useState("");
@@ -32,7 +35,7 @@ export function CreateTask() {
       tags,
       testCases,
       answer,
-      user
+      user,
     };
 
     try {
@@ -44,21 +47,25 @@ export function CreateTask() {
         },
         body: JSON.stringify(taskData),
       });
-
-      if (response.ok) {
-     
+      const data = await response.json();
+      console.log(data);
+      if (data.ok) {
         navigate("/tasks");
       } else {
-        console.error("Ошибка при создании задания");
+        setError(data.message);
       }
     } catch (error) {
-      console.error("Ошибка при отправке запроса:", error);
+      setError('Error');
     }
   };
+
 
   return (
     <div className="px-40 flex flex-1 justify-center py-5">
       <div className="mt-8 layout-content-container flex flex-col max-w-[960px] flex-1">
+        {error ? (
+          <Error message={error} setErr={setError} />
+        ) : ""}
         <h1 className="text-[#1c110d] text-3xl font-bold mb-6 text-center">Create task</h1>
         {user === undefined ? "" : user?.role === 'USER' ? (
           <h1 className="text-center text-2xl">Access denied, you are not an admin or moderator</h1>

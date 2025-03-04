@@ -10,6 +10,7 @@ import { Task } from "./pages/task/task";
 import { CreateTask } from "./pages/createTask/createTask";
 import { Profile } from "./pages/profile/profile";
 import { AdminRegistration } from "./pages/adminRegistration/adminRegistration";
+import { UncommitedTasks } from "./pages/uncommitedTasks/uncommitedTasks";
 
 
 function App() {
@@ -28,6 +29,7 @@ function App() {
             {/* FOR ADMIIN */}
             <Route path="/create-task" element={<CreateTask />} />
             <Route path="/registration-with-role" element={<AdminRegistration />} />
+            <Route path="/uncommited-tasks" element={<UncommitedTasks />} />
           </Routes>
         </BrowserRouter>
       </Wrap>

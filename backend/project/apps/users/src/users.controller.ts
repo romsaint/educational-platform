@@ -1,7 +1,7 @@
-import { Body, Controller, Get, Post, Req, Res } from '@nestjs/common';
+import { Body, Controller, Get, Param, Post, Req, Res } from '@nestjs/common';
 import { UsersService } from './users.service';
-import { Request, Response } from 'express';
-
+import { Response } from 'express';
+import { IUserWitoutPassword } from '@app/educational-lib';
 
 @Controller()
 export class UsersController {
@@ -12,9 +12,14 @@ export class UsersController {
     return await this.usersService.checkUnique(data);
   }
 
-  @Get('test')
-  asdasd(@Req() req: Request) {
-    console.log(req.signedCookies.user)
-    return req.signedCookies.user
+  
+  @Get('avatar/:avatar')
+  getAvatar(@Param('avatar') avatar: string, @Res() res: Response) {
+    return this.usersService.getAvatar(avatar, res)
+  }
+
+  @Post('profile')
+  async profile(@Body() user: IUserWitoutPassword) {
+    return await this.usersService.profile(user)
   }
 }
