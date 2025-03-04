@@ -31,7 +31,7 @@ export function UncommitedTasks() {
         const response = await fetch("http://localhost:3001/tasks/commit-task", {
           method: "POST",
           headers: { "Content-Type": "application/json" },
-          body: JSON.stringify({ taskId, role: user.role }),
+          body: JSON.stringify({ taskId, role: user.role, id: user.id }),
         });
         if (response.ok) {
           // После успешного commit можно удалить задачу из списка

@@ -102,9 +102,9 @@ export function Profile() {
                       className="bg-[#f4eae7] p-4 rounded-xl flex justify-between items-center"
                     >
                       <div>
-                        <h3 className="text-[#1c110d] text-lg font-medium">
+                        <a href={`/task/${task.id}`} className="text-[#1c110d] text-lg font-medium">
                           {task.title}
-                        </h3>
+                        </a>
                         <div className="flex gap-2 mt-2">
                           {task.tags.split(", ").map((tag) => (
                             <span

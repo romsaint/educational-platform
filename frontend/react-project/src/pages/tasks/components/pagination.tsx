@@ -97,12 +97,13 @@ export const Pagination: React.FC<PaginationProps> = ({
     navigate(`/tasks?${newSearchParams.toString()}`);
   };
 
+
   const handSetleLevelFilter = (level: string | null) => {
     if(level) {
-      updateUrlParams({ level });
+      const currentLevel = searchParams.get("level");
+      updateUrlParams({ level: currentLevel === level ? 'all' : level });
     }
   };
-
   
   return (
     <div className="p-6 bg-[#fcf9f8]">

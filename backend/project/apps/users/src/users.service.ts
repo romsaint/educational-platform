@@ -50,9 +50,9 @@ export class UsersService implements OnModuleInit, OnModuleDestroy {
     completedTasks = completedTasks.length === 0 ? 0 : completedTasks
     
     const watched: any[] | null = (await client.query(`
-        select id, title, level, tags, likes from tasks u
-        JOIN watched w ON w.user_id = u.created_by
-        WHERE user_id = $1
+        select DISTINCT ON(id) id, title, level, tags, likes from tasks t
+      JOIN watched w ON w.task_id = t.id
+      WHERE user_id = $1
     `, [user.id])).rows
 
 

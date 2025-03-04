@@ -1,8 +1,7 @@
-import { HttpException, Injectable, OnModuleDestroy, OnModuleInit } from '@nestjs/common';
+import { Injectable, OnModuleDestroy, OnModuleInit } from '@nestjs/common';
 import { client } from '@app/educational-lib';
 import { ITask } from '@app/educational-lib/db/interfaces/tasks/task.interface';
 import { TaskWithoutAnswer } from '@app/educational-lib';
-
 
 @Injectable()
 export class TasksService implements OnModuleInit, OnModuleDestroy {
@@ -19,7 +18,7 @@ export class TasksService implements OnModuleInit, OnModuleDestroy {
     lvlSorted: string,
     tags: string,
     date: 'old' | 'new' | null,
-    level: 'Easy' | 'Medium' | 'Hard' | 'undefined'
+    level: 'Easy' | 'Medium' | 'Hard' | 'undefined' | 'all'
   ) {
 
     if (page <= 0 || onPage <= 0) {
@@ -28,25 +27,25 @@ export class TasksService implements OnModuleInit, OnModuleDestroy {
 
     let levelSortQuery: string = ''
 
-    if (!level || level === 'undefined') {
-      if (lvlSorted === 'toLow') {
-        levelSortQuery = `
-          CASE level
-            WHEN 'Easy' THEN 3
-            WHEN 'Medium' THEN 2
-            WHEN 'Hard' THEN 1
-            ELSE 4
-          END`;
-      } else {
-        levelSortQuery = `
-          CASE level
-            WHEN 'Easy' THEN 1
-            WHEN 'Medium' THEN 2
-            WHEN 'Hard' THEN 3
-            ELSE 4
-          END`;
-      }
+
+    if (lvlSorted === 'toLow') {
+      levelSortQuery = `
+        CASE level
+          WHEN 'Easy' THEN 3
+          WHEN 'Medium' THEN 2
+          WHEN 'Hard' THEN 1
+          ELSE 4
+        END`;
+    } else {
+      levelSortQuery = `
+        CASE level
+          WHEN 'Easy' THEN 1
+          WHEN 'Medium' THEN 2
+          WHEN 'Hard' THEN 3
+          ELSE 4
+        END`;
     }
+
 
     let tagsQuery: string = '';
     const tagValues: string[] = [];
@@ -68,7 +67,7 @@ export class TasksService implements OnModuleInit, OnModuleDestroy {
     }
 
     let levelFilterQuery: string = '';
-    if (level && level !== 'undefined') {
+    if (level && level !== 'undefined' && level !== 'all') {
       levelFilterQuery = ` AND level = '${level}'`;
     }
 
@@ -114,24 +113,24 @@ export class TasksService implements OnModuleInit, OnModuleDestroy {
       if (e instanceof Error) {
         return { msg: e.message, ok: false }
       } else {
-        return {msg: 'Error', ok: false}
+        return { msg: 'Error', ok: false }
       }
     }
   }
-  async task(id: number): Promise<TaskWithoutAnswer | {[key: string]: any}> {
-    try{
+  async task(id: number): Promise<TaskWithoutAnswer | { [key: string]: any }> {
+    try {
       const task: ITask = (await client.query(`
         SELECT * FROM tasks
-        WHERE id = $1`, [id])).rows[0]
+        WHERE id = $1 and iscommited = true`, [id])).rows[0]
 
-    const { answer, ...data } = task
+      const { answer, ...data } = task
 
-    return data;
-    }catch(e) {
+      return data;
+    } catch (e) {
       if (e instanceof Error) {
         return { msg: e.message, ok: false }
       } else {
-        return {msg: 'Error', ok: false}
+        return { msg: 'Error', ok: false }
       }
     }
   }
@@ -154,7 +153,7 @@ export class TasksService implements OnModuleInit, OnModuleDestroy {
       if (tagArray.length > 0) {
         queryText += ` WHERE (${tagArray.map((_, index) => `tags LIKE $${index + 1}`).join(' OR ')})`;
       }
-
+      queryText += ' AND iscommited = true'
       queryText += ` AND id != $${tagArray.length + 1}`;
 
       queryText += ' LIMIT 5';
@@ -169,28 +168,29 @@ export class TasksService implements OnModuleInit, OnModuleDestroy {
       if (e instanceof Error) {
         return { msg: e.message, ok: false }
       } else {
-        return {msg: 'Error', ok: false}
+        return { msg: 'Error', ok: false }
       }
     }
   }
 
-  async allTags(): Promise<string[] | {[key: string]: any}> {
-    try{
+  async allTags(): Promise<string[] | { [key: string]: any }> {
+    try {
       const tags = (await client.query(`
         WITH split_tags AS (
             SELECT UNNEST(STRING_TO_ARRAY(tags, ',')) AS tag
             FROM tasks
+            where iscommited = true
         ) 
         select distinct TRIM(tag) from split_tags
     `)).rows
-  
+
       return tags
-  
-    }catch(e) {
+
+    } catch (e) {
       if (e instanceof Error) {
         return { msg: e.message, ok: false }
       } else {
-        return {msg: 'Error', ok: false}
+        return { msg: 'Error', ok: false }
       }
     }
   }
@@ -210,7 +210,7 @@ export class TasksService implements OnModuleInit, OnModuleDestroy {
       if (e instanceof Error) {
         return { msg: e.message, ok: false }
       } else {
-        return {msg: 'Error', ok: false}
+        return { msg: 'Error', ok: false }
       }
     }
   }
@@ -227,15 +227,22 @@ export class TasksService implements OnModuleInit, OnModuleDestroy {
       if (e instanceof Error) {
         return { msg: e.message, ok: false }
       } else {
-        return {msg: 'Error', ok: false}
+        return { msg: 'Error', ok: false }
       }
     }
   }
 
 
-  async commitTask(task: { taskId: number, role: string }) {
-    console.log(task)
+  async commitTask(task: { taskId: number, role: string, id: number }) {
     try {
+      const user = (await client.query(`
+          SELECT username FROM users
+          WHERE role = $1 AND id = $2
+      `, [task.role, task.id])).rows[0]
+      if (!user) {
+        return { msg: "Access denied!" }
+      }
+
       if (task.role !== 'USER') {
         await client.query(`
           UPDATE tasks
@@ -247,7 +254,7 @@ export class TasksService implements OnModuleInit, OnModuleDestroy {
       if (e instanceof Error) {
         return { msg: e.message, ok: false }
       } else {
-        return {msg: 'Error', ok: false}
+        return { msg: 'Error', ok: false }
       }
     }
   }

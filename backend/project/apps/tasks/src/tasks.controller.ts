@@ -1,9 +1,14 @@
 import { Body, Controller, Get, Param, ParseIntPipe, Post, Query } from '@nestjs/common';
 import { TasksService } from './tasks.service';
+import { WatchedService } from './watched/watched.service';
 
 @Controller('tasks')
 export class AppController {
-  constructor(private readonly tasksService: TasksService) {}
+  constructor(
+    private readonly tasksService: TasksService,
+    private readonly watchedService: WatchedService,
+
+  ) {}
 
   @Get('')
   async allTasks(
@@ -43,7 +48,12 @@ export class AppController {
   }
 
   @Post('commit-task')
-  async commitTask(@Body() task: {taskId: number, role: string}) { 
+  async commitTask(@Body() task: {taskId: number, role: string, id: number}) { 
     return await this.tasksService.commitTask(task)
+  }
+
+  @Post('set-watched')
+  async setWatched(@Body() task: {taskId: number, userId: number}) { 
+    return await this.watchedService.setWatched(task)
   }
 }

@@ -4,9 +4,13 @@ import { Output } from "./output";
 import { ITask } from "../../../interfaces/tasks/task.interface";
 import { fetchTask } from "../logic/fethTask";
 import { Sidebar } from "./sidebar";
+import { setWatched } from '../logic/setWatched'
+import Cookie from 'js-cookie';
+
 
 export function MainContent({ id }: { id: number }) {
   const [task, setTask] = useState<ITask | null>(null);
+  const [user, setUser] = useState<{[key: string]: any} | null>(null)
 
   useEffect(() => {
     async function loadTask(id: number) {
@@ -16,6 +20,15 @@ export function MainContent({ id }: { id: number }) {
 
     loadTask(id);
   }, [id]);
+
+  useEffect(() => {
+    const userStr = Cookie.get('user')
+    if(userStr && id) {
+
+      setUser(JSON.parse(userStr))
+      setWatched(JSON.parse(userStr).id, Number(id))
+    }
+  }, [])
 
   return (
     <>
