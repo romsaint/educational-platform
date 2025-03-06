@@ -1,17 +1,17 @@
 import { onSubmitForm } from "../../registration/logic/onSubmitForm";
 import { useNavigate } from "react-router-dom";
 import styles from '../login.module.css'
-import { useError } from "../../../../components/context/error.context";
+import { useState } from "react";
 
 export function FormLogin() {
   const navigate = useNavigate()
-  const {error, setError} = useError()
+  const [error, setError] = useState<string | null>(null)
 
   return (
     <>
       <form className="mt-6"
         method="POST"
-        onSubmit={(event) => onSubmitForm(event, navigate, 'login', setError)}
+        onSubmit={(event) => onSubmitForm(event, navigate, 'login', setError, null)}
         action={"http://localhost:3000/auth/login"}>
         <div className="mb-4">
           <label

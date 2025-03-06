@@ -2,10 +2,10 @@ import styles from "./login.module.css"; // Создайте файл login.modu
 import { Link } from "react-router-dom";
 import { FormLogin } from "./components/formLogin";
 import { Error } from "../../../components/erorr";
-import { useError } from "../../../components/context/error.context";
+import { useState } from "react";
 
 export function Login() {
-  const {error, setError} = useError()
+  const [error, setError] = useState<string | null>(null)
 
   return (
     <>

@@ -4,12 +4,11 @@ import Cookies from "js-cookie";
 import { FormRegisration } from "./components/formRegistration";
 import { Link } from "react-router-dom";
 import { Error } from "../../../components/erorr";
-import { useError } from "../../../components/context/error.context";
 
 
 export function Signup() {
   const [isReg, setIsReg] = useState<string | undefined>(undefined);
-  const {error, setError} = useError()
+  const [error, setError] = useState<string | null>(null)
 
   useEffect(() => {
     const user = Cookies.get("user");

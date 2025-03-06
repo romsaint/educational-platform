@@ -1,4 +1,3 @@
-import { ITaskProfile } from "../tasks/taskProfile.interface";
 import { UserRoles } from "./user.interface";
 
 export interface IUserProfile {

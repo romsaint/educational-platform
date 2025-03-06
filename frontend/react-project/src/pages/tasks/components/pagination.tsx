@@ -110,7 +110,7 @@ export const Pagination: React.FC<PaginationProps> = ({
       <div className="current_settings mb-10 flex flex-row">
         <div className="current_level flex flex-row gap-2">
         <div className="title_current_level flex items-center mr-4">
-          <h1 className="" >Current levels:</h1>
+          <h1 className="" >Current level:</h1>
         </div>
           <button
             key="next"

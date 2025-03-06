@@ -3,7 +3,6 @@ import { onSubmitForm } from "../logic/onSubmitForm";
 import { useState, useRef } from "react";
 import styles from "../registration.module.css";
 import { checkUnique } from "../logic/checkUnique";
-import { useError } from "../../../../components/context/error.context";
 
 export function FormRegisration() {
   const [uniqueChecked, setUniqueChecked] = useState<boolean | undefined | "Data">(undefined);
@@ -11,7 +10,7 @@ export function FormRegisration() {
   const [previewUrl, setPreviewUrl] = useState<string | null>(null);
   const fileInputRef = useRef<HTMLInputElement>(null); // Ref для input type="file"
   const navigate = useNavigate();
-  const { error, setError } = useError();
+  const [error, setError] = useState<string | null>(null)
 
   // Обработчик выбора файла
   const handleFileChange = (event: React.ChangeEvent<HTMLInputElement>) => {

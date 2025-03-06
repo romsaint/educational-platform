@@ -1,6 +1,5 @@
-import { ITask } from "../../../interfaces/tasks/task.interface"
 
-export async function fetchTask(id: number): Promise<ITask> {
+export async function fetchTask(id: number){
     const res = await fetch(`http://127.0.0.1:3001/tasks/task/${id}`)
     const data = await res.json()
 

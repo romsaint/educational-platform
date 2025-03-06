@@ -10,7 +10,7 @@ export class WatchedService {
                 select user_id From watched
                 where user_id = $1 AND task_id = $2
             `, [task.userId, task.taskId])).rows[0]
-                console.log(task)
+    
             if (!watched) {
                 await client.query(`
                     INSERT INTO watched (user_id, task_id)

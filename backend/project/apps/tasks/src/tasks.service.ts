@@ -2,6 +2,8 @@ import { Injectable, OnModuleDestroy, OnModuleInit } from '@nestjs/common';
 import { client } from '@app/educational-lib';
 import { ITask } from '@app/educational-lib/db/interfaces/tasks/task.interface';
 import { TaskWithoutAnswer } from '@app/educational-lib';
+import { ITaskWithoutAnswer } from '@app/educational-lib/db/interfaces/tasks/taskWithoutAnswer.interface';
+import { taskTestCases } from '../shared/taskTestCases';
 
 @Injectable()
 export class TasksService implements OnModuleInit, OnModuleDestroy {
@@ -117,15 +119,22 @@ export class TasksService implements OnModuleInit, OnModuleDestroy {
       }
     }
   }
+
   async task(id: number): Promise<TaskWithoutAnswer | { [key: string]: any }> {
     try {
       const task: ITask = (await client.query(`
         SELECT * FROM tasks
         WHERE id = $1 and iscommited = true`, [id])).rows[0]
 
-      const { answer, ...data } = task
+      const {answer, ...taskWithoutAnswer} = task
 
-      return data;
+      const cases = await taskTestCases(taskWithoutAnswer)
+      console.log(cases)
+      if(!cases?.msg) {
+        return {task: taskWithoutAnswer, cases}
+      }
+   
+      return {task: taskWithoutAnswer}
     } catch (e) {
       if (e instanceof Error) {
         return { msg: e.message, ok: false }
@@ -200,10 +209,11 @@ export class TasksService implements OnModuleInit, OnModuleDestroy {
       if (task.user.role === 'USER') {
         return { ok: false, msg: "Access denied" }
       }
+
       await client.query(`
           INSERT INTO tasks (title, description, level, created_by, iscommited, tags, test_cases, answer)
           VALUES ($1, $2, $3, $4, $5, $6, $7, $8)
-      `, [task.title, task.description, task.level.toUpperCase(), task.user.id, false, task.tags, task.testCases, task.answer])
+      `, [task.title, task.description, task.level, task.user.id, false, task.tags, task.testCases, task.answer])
 
       return { ok: true, msg: "Created" }
     } catch (e) {

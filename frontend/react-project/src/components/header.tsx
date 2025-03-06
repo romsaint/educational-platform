@@ -48,28 +48,28 @@ export function Header() {
               Courses
             </a>
             <Link to={"/tasks?lvlSorted=toLow&dateSorted=new"}>
-              <a
+              <p
                 className={`${styles.link_nav} text-[#1c110d] text-sm font-medium leading-normal`}
               >
                 Tasks
-              </a>
+              </p>
             </Link>
             {isReg ? isReg.role !== "USER" ? (
               <Link to={"/create-task"}>
-                <a
+                <p
                   className={`${styles.link_nav} text-[#1c110d] text-sm font-medium leading-normal`}
                 >
                   Create task
-                </a>
+                </p>
               </Link>
             ) : '' : ''}
             {isReg !== undefined ? (
               <Link to={"/login"}>
-                <a
+                <p
                   className={`${styles.link_nav} text-[#1c110d] text-sm font-medium leading-normal`}
                 >
                   Login
-                </a>
+                </p>
               </Link>
             ) : ''}
           </div>

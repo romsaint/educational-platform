@@ -99,7 +99,7 @@ export const Task = ({ task, idx, handleSetLevelFilter, updateUrlParams }: { tas
                   d="M6.786 1.459a.903.903 0 0 0-1.572 0L1.122 8.628C.774 9.238 1.211 10 1.91 10h8.18c.698 0 1.135-.762.787-1.372l-4.092-7.17Z"
                 />
               </svg>
-              <p>Levels</p>
+              <p>Level</p>
             </span>
           </button>
         </div>

@@ -1,12 +1,15 @@
 import { Body, Controller, Get, Param, ParseIntPipe, Post, Query } from '@nestjs/common';
 import { TasksService } from './tasks.service';
 import { WatchedService } from './watched/watched.service';
+import { SolvedService } from './solved/solved.service';
+import { IUserWitoutPassword } from '@app/educational-lib';
 
 @Controller('tasks')
 export class AppController {
   constructor(
     private readonly tasksService: TasksService,
     private readonly watchedService: WatchedService,
+    private readonly solvedService: SolvedService,
 
   ) {}
 
@@ -55,5 +58,10 @@ export class AppController {
   @Post('set-watched')
   async setWatched(@Body() task: {taskId: number, userId: number}) { 
     return await this.watchedService.setWatched(task)
+  }
+
+  @Post('solve-test-cases')
+  async solveTestCases(@Body() testCases: {testCases: string, taskId: number, user: IUserWitoutPassword}){
+      return await this.solvedService.solveTestCases(testCases)
   }
 }

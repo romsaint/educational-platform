@@ -3,12 +3,10 @@ import styles from "./adminRegistration.module.css";
 import Cookies from "js-cookie";
 import { FormAdminRegistration } from "./components/formAdminRegistration";
 import { Link } from "react-router-dom";
-import { Error } from "../../components/erorr";
-import { useError } from "../../components/context/error.context";
+
 
 export function AdminRegistration() {
   const [isReg, setIsReg] = useState<string | undefined>(undefined);
-  const {error, setError} = useError()
 
   useEffect(() => {
     const user = Cookies.get("user");
@@ -18,7 +16,6 @@ export function AdminRegistration() {
   return (
     <>
       <div className={`${styles.wrap} w-100`}>
-        {error ? <Error message={error} setErr={setError} /> : ''}
         <div className="w-full max-w-md bg-white rounded-lg shadow-lg p-8">
           <div className="text-center">
             <svg

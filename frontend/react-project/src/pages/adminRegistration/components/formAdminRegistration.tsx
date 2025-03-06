@@ -3,14 +3,13 @@ import { onSubmitForm } from "../logic/onSubmitForm";
 import { useRef, useState } from "react";
 import styles from "../adminRegistration.module.css";
 import { checkUnique } from "../../registration/registration/logic/checkUnique";
-import { useError } from "../../../components/context/error.context";
 
 
 export function FormAdminRegistration() {
     const [uniqueChecked, setUniqueChecked] = useState<boolean | undefined | "Data">(undefined)
     const [file, setFile] = useState<null | File>(null)
     const [previewUrl, setPreviewUrl] = useState<string | null>(null);
-    const {error, setError} = useError()
+    const [error, setError] = useState<string | null>(null)
     const [errorImage, setErrorImage] = useState<boolean>(false)
     const [selectedRole, setSelectedRole] = useState<"ADMIN" | "MODERATOR">("ADMIN");
 

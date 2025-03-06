@@ -1,12 +1,12 @@
 import { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import Cookie from 'js-cookie'
-import { useError } from "../../components/context/error.context";
 import { Error } from "../../components/erorr";
+import { CodeEditor } from "./components/codeEditor";
 
 export function CreateTask() {
   const navigate = useNavigate();
-  const { error, setError } = useError();
+  const [ error, setError ] = useState<null | string>(null);
   const [user, setUser ] = useState<{ [key: string]: any } | undefined>(undefined);
 
   useEffect(() => {
@@ -48,11 +48,12 @@ export function CreateTask() {
         body: JSON.stringify(taskData),
       });
       const data = await response.json();
-      console.log(data);
+    
       if (data.ok) {
         navigate("/tasks");
+        window.location.reload()
       } else {
-        setError(data.message);
+        setError(data.msg);
       }
     } catch (error) {
       setError('Error');
@@ -61,8 +62,8 @@ export function CreateTask() {
 
 
   return (
-    <div className="px-40 flex flex-1 justify-center py-5">
-      <div className="mt-8 layout-content-container flex flex-col max-w-[960px] flex-1">
+    <div className="px-40 justify-center py-5">
+      <div className="mt-8 layout-content-container flex flex-col flex-1">
         {error ? (
           <Error message={error} setErr={setError} />
         ) : ""}
@@ -123,25 +124,19 @@ export function CreateTask() {
           </div>
 
           <div className="flex flex-col gap-2">
-            <label className="text-[#1c110d] text-sm font-medium">Testcases (comma separated; E.g yourFunc(1), yourFunc(2) ...)</label>
+            <label className="text-[#1c110d] text-sm font-medium">Testcases (comma separated; E.g [1, 2, 3], [15, 5, 23])</label>
             <input
               type="text"
               value={testCases}
-              onChange={(e) => setTestCases(e.target.value)}
+              onChange={e => setTestCases(e.target.value)}
               className="px-3 py-2 rounded-md bg-[#f4eae7] text-[#1c110d] focus:outline-none"
               required
             />
           </div>
 
           <div className="flex flex-col gap-2">
-            <label className="text-[#1c110d] text-sm font-medium">Answers (answer is the answers to your testcases, comma separated; E.g 1, 2 ...)</label>
-            <input
-              type="text"
-              value={answer}
-              onChange={(e) => setAnswer(e.target.value)}
-              className="px-3 py-2 rounded-md bg-[#f4eae7] text-[#1c110d] focus:outline-none"
-              required
-            />
+            <label className="text-[#1c110d] text-sm font-medium">Answer (e.g function minElInArray() ={">"} ...)</label>
+            <CodeEditor setAnswer={setAnswer} />
           </div>
 
           <button
