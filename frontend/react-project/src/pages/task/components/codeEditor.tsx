@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { basicSetup } from "codemirror";
 import { javascript } from "@codemirror/lang-javascript";
 import { oneDark } from "@codemirror/theme-one-dark";
@@ -6,21 +6,37 @@ import Editor from "@uiw/react-codemirror";
 import { Output } from "./output";
 import Cookies from "js-cookie";
 import { ITaskWithoutAnswer } from "../../../interfaces/tasks/taskWithoutAnswer.interface";
+import { fetchRunCode } from "../logic/fetchRunCode";
 
 export function CodeEditor({task}: {task: ITaskWithoutAnswer | null}) {
-  const functionName = 'countStr'
-  const [code, setCode] = useState<string>(`function ${functionName}(string) {\n // ...\n}`);
+  const codeCookie = Cookies.get(`code_${task?.id}`)
+  const [code, setCode] = useState<string>(codeCookie ? codeCookie : `function myFn() {\n \n}`);
   const [output, setOutput] = useState<string>("// Your code output will appear here");
+  const [data, setData] = useState<{[any: string]: any} | null>(null);
+  const [user, setUser] = useState<{[any: string]: any} | null>(null);
 
-  
+  useEffect(() => {
+    const user = Cookies.get('user')
+    if(user) {
+      setUser(JSON.parse(user))
+    }
+  }, [])
 
+  useEffect(() => {
+    Cookies.set(`code_${task?.id}`, code)
+  }, [code])
   const onChange = (value: string) => {
     setCode(value);
   };
   
-  function runCode() {
+  async function runCode() {
     try {
-      console.log(Cookies.get(`test_cases_${task?.id}`))
+      const testCases = Cookies.get(`test_cases_${task?.id}`)
+      if(testCases && task?.id && user) {
+        const res = await fetchRunCode(code, testCases, task?.id, user.id)
+        Cookies.set(`answer_${task?.id}`, res)
+        setData(res)
+      }
     } catch (error: any) {
       setOutput(`Error: ${error.message}`);
     }
@@ -47,7 +63,7 @@ export function CodeEditor({task}: {task: ITaskWithoutAnswer | null}) {
         />
       </div>
       
-      <Output output={output} />
+      <Output data={data} />
     </>
   );
 }

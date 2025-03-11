@@ -4,27 +4,53 @@ import { ITask } from "../../../interfaces/tasks/task.interface";
 import { useSearchParams } from "react-router-dom";
 import { IUserWitoutPassword } from "../../../interfaces/users/userWithoutPassword.interface";
 import { handleTagClick } from "../logic/handleTagClick";
-import { onChangeTestCase } from "../logic/onChangeTestCase";
 import Cookies from "js-cookie";
+import { fetchAnswerForAdmin } from "../logic/fetchAnswerForAdmin";
 import { ITaskWithoutAnswer } from "../../../interfaces/tasks/taskWithoutAnswer.interface";
+import { onChangeTestCase } from "../logic/onChangeTestCase";
 
 export function Sidebar({
   task,
-  user,
-  resTestCases,
-  casesValues
+  dataFromMain,
 }: {
   task: ITaskWithoutAnswer | null;
-  user: IUserWitoutPassword | null;
-  resTestCases: string[] | null
-  casesValues: string[] | null
+  dataFromMain: { [key: string]: any };
 }) {
+  const initialCases = Array.isArray(dataFromMain?.cases.testsRes)
+    ? dataFromMain.cases.testsRes
+    : [];
+  const initialCasesRes = Array.isArray(dataFromMain?.cases.testsRes)
+    ? dataFromMain.cases.res
+    : [];
+  const [data, setData] = useState<{ [key: string]: any }>(dataFromMain);
   const [tasksByTags, setTasksByTags] = useState<ITask[] | null>(null);
   const [searchParams, setSearchParams] = useSearchParams();
-  console.log(resTestCases, casesValues)
-  // Единое состояние для значений тест-кейсов
-  const [testCasesValues, setTestCasesValues] = useState<string[] | null>(casesValues);
-  
+  const [answer, setAnswer] = useState<string | null>(null);
+  const [userCookie, setUserCookie] = useState<IUserWitoutPassword | null>(
+    null
+  );
+  // Храним testCasesValues как массив любых значений, чтобы сохранить исходный тип
+  const [testCasesValues, setTestCasesValues] = useState<any[]>(initialCases);
+  console.log(data);
+  useEffect(() => {
+    const user = Cookies.get("user");
+    if (user) {
+      setUserCookie(JSON.parse(user));
+    }
+  }, []);
+
+  useEffect(() => {
+    async function fetchAnswer() {
+      Cookies.set(`test_cases_${task?.id}`, JSON.stringify(testCasesValues));
+      if (task && userCookie && task.id && userCookie.role !== "USER") {
+        const answ = await fetchAnswerForAdmin(userCookie, task.id);
+        if (typeof answ === "string") {
+          setAnswer(answ);
+        }
+      }
+    }
+    fetchAnswer();
+  }, [task, userCookie, testCasesValues]);
 
   useEffect(() => {
     async function fetchTasks() {
@@ -54,36 +80,53 @@ export function Sidebar({
       <div>
         <h2 className="text-[#1c110d] text-lg font-bold mb-4">Test Cases</h2>
         <div>
-          {testCasesValues ? testCasesValues.length ? (
-            testCasesValues.map((tc, idx) => (
-              <input 
-                key={idx}
-                type="text"
-                className="w-full my-2 px-4 py-2 ring-0 focus:ring-0"
-                value={tc}
-                onChange={e => onChangeTestCase(e.target.value, idx, setTestCasesValues)}
-              />
-            ))
-          ) : (
-            "Loading test cases..."
-          ): (
-            "Loading test cases..."
-          )}
+          {testCasesValues && testCasesValues.length > 0
+            ? testCasesValues.map((tc, idx: number) => (
+                <input
+                  key={idx}
+                  type="text"
+                  className="w-full my-2 px-4 py-2 ring-0 focus:ring-0"
+                  value={
+                    typeof tc === "object" ? JSON.stringify(tc) : String(tc)
+                  }
+                  onChange={(e) =>
+                    onChangeTestCase(
+                      e.target.value,
+                      idx,
+                      setTestCasesValues,
+                      task?.id,
+                      testCasesValues
+                    )
+                  }
+                />
+              ))
+            : "Loading test cases..."}
         </div>
-        <h2 className="text-[#1c110d] text-lg font-bold mt-4 mb-4">
-          Expected Output
-        </h2>
-        <div className="bg-[#fcf9f8] p-3 rounded-lg shadow-sm">
-          {resTestCases ? (
-            <ul className="list-disc pl-4">
-              {resTestCases.map((val, idx) => 
-                <li key={idx} className="font-mono text-[#1c110d]">{val}</li>
-              )}
-            </ul>
-          ) : (
-            "Loading expected output..."
-          )}
+        <h2 className="text-[#1c110d] text-lg font-bold mt-4 mb-4">Answer</h2>
+        <div>
+          {initialCasesRes && initialCasesRes.length > 0
+            ? initialCasesRes.map((tc: any, idx: number) => (
+                <input
+                  key={idx}
+                  type="text"
+                  disabled
+                  className="w-full my-2 px-4 py-2 ring-0 focus:ring-0"
+                  value={
+                    typeof tc === "object" ? JSON.stringify(tc) : String(tc)
+                  }
+                />
+              ))
+            : "Loading test cases..."}
         </div>
+        {userCookie?.role !== "USER" ? (
+          <div className="answer-for-admin mt-2 mb-2 bg-[#fcf9f8] p-3 rounded-lg shadow-sm">
+            <h1 className="font-bold text-2xl mb-4">Answer for admin</h1>
+            {answer ? <p className="answer">{answer}</p> : "Loading answer..."}
+          </div>
+        ) : (
+          ""
+        )}
+ 
       </div>
 
       {/* Tasks */}

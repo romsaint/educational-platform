@@ -5,11 +5,10 @@ import { oneDark } from "@codemirror/theme-one-dark";
 import Editor from "@uiw/react-codemirror";
 
 export function CodeEditor({setAnswer}: {setAnswer: (val: string) => void}) {
-  const functionName = "myFn";
   const [code, setCode] = useState<string>(
-    `function ${functionName}() {\n \n}`
+    `function myFn() {\n \n}`
   );
-
+ 
   const onChange = (value: string) => {
     setAnswer(value)
     setCode(value);

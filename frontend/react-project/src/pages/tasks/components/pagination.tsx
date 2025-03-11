@@ -20,12 +20,12 @@ export const Pagination: React.FC<PaginationProps> = ({
   setCurrentPage,
   quantity,
 }) => {
-  if (quantity === null) {
-    return null;
-  }
   const [searchParams, setSearchParams] = useSearchParams();
   const navigate = useNavigate();
-  const totalPages = Math.ceil(quantity / itemsPerPage);
+  let totalPages: number
+  if(quantity) {
+    totalPages = Math.ceil(quantity / itemsPerPage);
+  }
 
   const handleItemsPerPageChange = (event: React.ChangeEvent<HTMLSelectElement>) => {
     const newItemsPerPage = parseInt(event.target.value, 10);

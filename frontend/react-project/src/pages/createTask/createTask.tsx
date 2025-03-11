@@ -124,7 +124,7 @@ export function CreateTask() {
           </div>
 
           <div className="flex flex-col gap-2">
-            <label className="text-[#1c110d] text-sm font-medium">Testcases (comma separated; E.g [1, 2, 3], [15, 5, 23])</label>
+            <label className="text-[#1c110d] text-sm font-medium">Testcases (;SPLIT; separated; E.g [1, 2, 3];SPLIT;[15, 5, 23] ...)</label>
             <input
               type="text"
               value={testCases}
@@ -133,6 +133,7 @@ export function CreateTask() {
               required
             />
           </div>
+
 
           <div className="flex flex-col gap-2">
             <label className="text-[#1c110d] text-sm font-medium">Answer (e.g function minElInArray() ={">"} ...)</label>

@@ -64,4 +64,14 @@ export class AppController {
   async solveTestCases(@Body() testCases: {testCases: string, taskId: number, user: IUserWitoutPassword}){
       return await this.solvedService.solveTestCases(testCases)
   }
+
+  @Post('run-code')
+  async runCode(@Body() code: {solveFn: string, testCases: string, taskId: number, userId: number}){
+      return await this.solvedService.runCode(code)
+  }
+
+  @Post('get-answer')
+  async getAnswer(@Body() data: {user: IUserWitoutPassword, taskId: number}){
+      return await this.tasksService.getAnswer(data)
+  }
 }

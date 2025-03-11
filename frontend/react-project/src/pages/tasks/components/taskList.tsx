@@ -25,8 +25,10 @@ const TaskList = () => {
         if(fetchedTasks.page) {
           handlePageChange(1)
         }
-        if (fetchedTasks.pagination && fetchedTasks.quantity) {
+        if (fetchedTasks.pagination) {
           setTasks(fetchedTasks.pagination);
+        }
+        if(fetchedTasks.quantity) {
           setQuantity(fetchedTasks.quantity);
         }
       } else {
@@ -59,6 +61,7 @@ const TaskList = () => {
       <div className={`${styles.list_columns_header} gap-2 flex flex-row p-2`}>
         <h1 className="text-4xl text-center w-[100%] text-[#1c110d] font-bold">Tasks</h1>
       </div>
+      
       <Pagination
         tasks={tasks}
         itemsPerPage={onPage}

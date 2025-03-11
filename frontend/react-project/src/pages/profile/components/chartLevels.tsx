@@ -1,7 +1,7 @@
 import { useEffect, useRef } from "react";
 import Chart from "chart.js/auto"; // Импортируем Chart.js
 
-export const ChartComponent = () => {
+export const ChartComponent = ({countByLevel}: {countByLevel: {[key: string]: any}}) => {
   const chartRef = useRef<HTMLCanvasElement | null>(null); // Создаем ref для canvas
   useEffect(() => {
     // Инициализация диаграммы
@@ -18,7 +18,7 @@ export const ChartComponent = () => {
             datasets: [
               {
                 label: "My Dataset",
-                data: [12, 19, 3],
+                data: [countByLevel?.easy | 0, countByLevel?.medium | 0, countByLevel?.hard | 0],
                 backgroundColor: [
                     "rgba(75, 192, 192, 0.8)",
                     "rgba(255, 159, 64, 0.8)",

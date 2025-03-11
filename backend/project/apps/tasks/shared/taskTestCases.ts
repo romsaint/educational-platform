@@ -1,50 +1,37 @@
 import { client } from "@app/educational-lib";
+import { ITask } from "@app/educational-lib/db/interfaces/tasks/task.interface";
 import { ITaskWithoutAnswer } from "@app/educational-lib/db/interfaces/tasks/taskWithoutAnswer.interface";
 
 export async function taskTestCases(taskWithoutAnswer: ITaskWithoutAnswer) {
     try {
-        const task = (await client.query(`
+        const { rows } = await client.query(`
             SELECT * FROM tasks
-            where id = $1      
-          `, [taskWithoutAnswer.id])).rows[0]
+            WHERE id = $1      
+            `, [taskWithoutAnswer.id]);
+        const task: ITask | undefined = rows[0];
 
         if (!task) {
-            return { msg: 'Task not found' }
+            return null
         }
 
-        let solutionFunc: ((arr: any) => any) | null = null;
-        if (task?.answer) {
+        let solutionFunc = eval(`(${task.answer.trim()})`);
+        const arr = task.test_cases.split(';SPLIT;')
+
+        function handlerVal(str: string) {
             try {
-                solutionFunc = eval('(' + task.answer + ')');
-            } catch (error) {
-                return { msg: "Error during parsing" }
+                return eval('(' + str + ')')
+            } catch (e) {
+
+                throw new Error('Error')
             }
-
-        }
-        let testCasesRes: any[] = []
-        if (task.test_cases.includes("[")) {
-            let k = 0;
-            let l = 0;
-            let res: string[] = [];
-            while (task.test_cases[k]) {
-                if (task.test_cases[k] === "]") {
-                    res.push(task.test_cases.slice(l, k + 1));
-                    l = k + 2;
-                }
-                k++;
-            }
-            testCasesRes = res
-        } else {
-            testCasesRes = task.test_cases.split(",")
         }
 
-        let solution
-        if(solutionFunc) {
-            solution = testCasesRes.map(val => solutionFunc(JSON.parse(val)))
-        }
-
-        return { testCasesRes, solution }
+        const testsRes = arr.map(val => handlerVal(val))
+        const res = testsRes.map(val => solutionFunc(val))
+       
+        return {res, testsRes}
     } catch (e) {
-        return { msg: "Error" }
+
+        return null
     }
 }

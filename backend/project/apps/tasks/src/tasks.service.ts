@@ -1,5 +1,5 @@
 import { Injectable, OnModuleDestroy, OnModuleInit } from '@nestjs/common';
-import { client } from '@app/educational-lib';
+import { client, IUserWitoutPassword } from '@app/educational-lib';
 import { ITask } from '@app/educational-lib/db/interfaces/tasks/task.interface';
 import { TaskWithoutAnswer } from '@app/educational-lib';
 import { ITaskWithoutAnswer } from '@app/educational-lib/db/interfaces/tasks/taskWithoutAnswer.interface';
@@ -104,9 +104,8 @@ export class TasksService implements OnModuleInit, OnModuleDestroy {
         `;
         const queryParams = [...tagValues, onPage];
 
-
         const tasks = await client.query(queryText, queryParams);
-
+        
         return { tasks: tasks.rows, quantity: parseInt(quantity.rows[0].count, 10), page: 1 }
       }
 
@@ -124,17 +123,18 @@ export class TasksService implements OnModuleInit, OnModuleDestroy {
     try {
       const task: ITask = (await client.query(`
         SELECT * FROM tasks
-        WHERE id = $1 and iscommited = true`, [id])).rows[0]
-
-      const {answer, ...taskWithoutAnswer} = task
-
-      const cases = await taskTestCases(taskWithoutAnswer)
-      console.log(cases)
-      if(!cases?.msg) {
-        return {task: taskWithoutAnswer, cases}
+        WHERE id = $1`, [id])).rows[0]
+      if (!task) {
+        return { msg: "Task not found" }
       }
-   
-      return {task: taskWithoutAnswer}
+      const { answer, ...taskWithoutAnswer } = task
+      const cases = await taskTestCases(taskWithoutAnswer)
+
+      if (cases) {
+        return { task: taskWithoutAnswer, cases }
+      }
+
+      return { task: taskWithoutAnswer, cases: null }
     } catch (e) {
       if (e instanceof Error) {
         return { msg: e.message, ok: false }
@@ -209,6 +209,7 @@ export class TasksService implements OnModuleInit, OnModuleDestroy {
       if (task.user.role === 'USER') {
         return { ok: false, msg: "Access denied" }
       }
+      const code = eval('(' + task.answer + ')')
 
       await client.query(`
           INSERT INTO tasks (title, description, level, created_by, iscommited, tags, test_cases, answer)
@@ -252,15 +253,16 @@ export class TasksService implements OnModuleInit, OnModuleDestroy {
       if (!user) {
         return { msg: "Access denied!" }
       }
-
+      
       if (task.role !== 'USER') {
         await client.query(`
           UPDATE tasks
           SET iscommited = true
           WHERE id = $1
-      `, [task.taskId])
+          `, [task.taskId])
       }
     } catch (e) {
+
       if (e instanceof Error) {
         return { msg: e.message, ok: false }
       } else {
@@ -268,4 +270,30 @@ export class TasksService implements OnModuleInit, OnModuleDestroy {
       }
     }
   }
+
+  async getAnswer(data: { user: IUserWitoutPassword, taskId: number }) {
+    try {
+      const user = (await client.query(`
+        SELECT * FROM users
+        WHERE role = $1 and id = $2
+    `, [data.user.role, data.user.id])).rows[0]
+
+      if (!user) {
+        return { msg: "Access denied!" }
+      }
+
+      const answer = (await client.query(`
+      SELECT answer from tasks
+      where id = $1  
+    `, [data.taskId])).rows[0]
+      if (!answer) {
+        return { msg: "Task not found" }
+      }
+
+      return answer
+    } catch (e) {
+      return { msg: 'Error' }
+    }
+  }
 }
+
