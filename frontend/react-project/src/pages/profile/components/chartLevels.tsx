@@ -1,16 +1,21 @@
-import { useEffect, useRef } from "react";
+import { useEffect, useRef, useState } from "react";
 import Chart from "chart.js/auto"; // Импортируем Chart.js
 
-export const ChartComponent = ({countByLevel}: {countByLevel: {[key: string]: any}}) => {
+export const ChartComponent = ({countByLevel}: {countByLevel: {[key: string]: any} | null}) => {
   const chartRef = useRef<HTMLCanvasElement | null>(null); // Создаем ref для canvas
+  const [countByLevelState, setCountByLevelState] = useState<{[key: string]: any} | null>(null)
   useEffect(() => {
-    // Инициализация диаграммы
+    if(countByLevel) {
+      setCountByLevelState(countByLevel)
+    }
+  }, [countByLevel])
+
+  useEffect(() => {
     const canvas = chartRef.current; // Получаем элемент canvas через ref
 
     if (canvas) {
       const ctx = canvas.getContext("2d");
-
-      if (ctx) {
+      if (ctx && countByLevelState) {
         const myChart = new Chart(ctx, {
           type: "pie", // Тип диаграммы (pie, bar, line и т.д.)
           data: {
@@ -18,7 +23,7 @@ export const ChartComponent = ({countByLevel}: {countByLevel: {[key: string]: an
             datasets: [
               {
                 label: "My Dataset",
-                data: [countByLevel?.easy | 0, countByLevel?.medium | 0, countByLevel?.hard | 0],
+                data: [Number(countByLevelState[0].count) | 0, Number(countByLevelState[1].count)  | 0, Number(countByLevelState[2].count)  | 0],
                 backgroundColor: [
                     "rgba(75, 192, 192, 0.8)",
                     "rgba(255, 159, 64, 0.8)",
@@ -48,7 +53,7 @@ export const ChartComponent = ({countByLevel}: {countByLevel: {[key: string]: an
         };
       }
     }
-  }, []);
+  }, [countByLevelState]);
 
   return (
     <div className="mb-8 h-[400px]">

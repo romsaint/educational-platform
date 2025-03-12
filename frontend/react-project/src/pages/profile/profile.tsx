@@ -22,8 +22,6 @@ export function Profile() {
       setUser (JSON.parse(userStr));
     }
   }, []);
-  console.log(dataProfile)
-
 
   return (
     <div className="px-40 flex flex-1 justify-center py-5">
@@ -81,13 +79,13 @@ export function Profile() {
                   Completed tasks
                 </h3>
                 <p className="text-[#f14b0e] text-3xl font-bold">
-                  {dataProfile ? dataProfile.completedTasks : 'Loading...'}
+                  {dataProfile ? dataProfile.completedTasks.length : 'Loading...'}
                 </p>
               </div>
             </div>
             <div className="charts flex flex-row justify-between">
-              <ChartComponent />
-              <DateChartComponent />
+              <ChartComponent countByLevel={dataProfile?.countByLevel} />
+              <DateChartComponent monthTasks={dataProfile?.monthTsks} />
             </div>
             {/* Созданные задания */}
             <div className="mb-8">

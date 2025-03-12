@@ -209,7 +209,6 @@ export class TasksService implements OnModuleInit, OnModuleDestroy {
       if (task.user.role === 'USER') {
         return { ok: false, msg: "Access denied" }
       }
-      const code = eval('(' + task.answer + ')')
 
       await client.query(`
           INSERT INTO tasks (title, description, level, created_by, iscommited, tags, test_cases, answer)
